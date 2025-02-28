@@ -3,11 +3,12 @@ import { TextField, Button, Typography, Container, Box, Paper } from '@mui/mater
 import { Link, useNavigate } from 'react-router-dom'; // To navigate after successful registration
 import { ThemeContext } from '../../ThemeContext';
 import { useAuth } from '../context/AuthProvider';
+import { registerUser } from '../../api';
 
 const RegisterPage: React.FC = () => {
   const { toggleTheme } = useContext(ThemeContext);  // Getting toggleTheme from ThemeContext
   const { register } = useAuth(); // Access the register method from AuthProvider
-
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,10 +23,11 @@ const RegisterPage: React.FC = () => {
       return;
     }
     try {
+      await registerUser(email, name);
       await register(email, password);
       navigate('/'); // Redirect to home or dashboard page after successful registration
-    } catch (error) {
-      setError("Error creating account");
+    } catch (error: any) {
+      setError("Error creating account" + error.message || error);
     }
   };
 
@@ -54,6 +56,16 @@ const RegisterPage: React.FC = () => {
           Create an Account
         </Typography>
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+          <TextField
+            label="Name"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            sx={{ marginBottom: 2 }}
+          />
           <TextField
             label="Email"
             type="email"
