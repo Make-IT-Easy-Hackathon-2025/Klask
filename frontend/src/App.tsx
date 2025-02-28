@@ -3,11 +3,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ROUTES } from "./navigation/routes";
 import NotFoundPage from "./pages/NotFoundPage";
 import Layout from "./components/Layout";
-import { AuthProvider } from "./pages/context/AuthProvider";
-
+import { AuthProvider } from "./context/AuthProvider";
 
 const App: React.FC = () => {
-
   const router = createBrowserRouter([
     {
       element: <Layout />,
