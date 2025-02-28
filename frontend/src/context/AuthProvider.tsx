@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '../../firebase';
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  User,
+} from "firebase/auth";
+import { auth } from "../firebase";
 
 interface AuthContextType {
   user: User | null;
@@ -25,7 +31,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      console.error('Error during registration', error);
+      console.error("Error during registration", error);
       throw error;
     }
   };
@@ -35,7 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      console.error('Error during login', error);
+      console.error("Error during login", error);
       throw error;
     }
   };
@@ -45,7 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await signOut(auth);
     } catch (error) {
-      console.error('Error during logout', error);
+      console.error("Error during logout", error);
       throw error;
     }
   };
@@ -71,7 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
