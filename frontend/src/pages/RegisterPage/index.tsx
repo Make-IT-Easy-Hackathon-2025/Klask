@@ -1,21 +1,32 @@
-// src/RegisterPage.tsx
 import React, { useState, useContext } from 'react';
 import { TextField, Button, Typography, Container, Box, Paper } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom'; // To navigate after successful registration
 import { ThemeContext } from '../../ThemeContext';
+import { useAuth } from '../context/AuthProvider';
 
 const RegisterPage: React.FC = () => {
-  const { toggleTheme } = useContext(ThemeContext);
+  const { toggleTheme } = useContext(ThemeContext);  // Getting toggleTheme from ThemeContext
+  const { register } = useAuth(); // Access the register method from AuthProvider
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (event: React.FormEvent) => {
+ 
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
       return;
     }
-    console.log({ email, password });
+    try {
+      await register(email, password);
+      navigate('/'); // Redirect to home or dashboard page after successful registration
+    } catch (error) {
+      setError("Error creating account");
+    }
   };
 
   return (
@@ -76,6 +87,7 @@ const RegisterPage: React.FC = () => {
             required
             sx={{ marginBottom: 2 }}
           />
+          {error && <Typography color="error">{error}</Typography>}
           <Button
             variant="contained"
             color="primary"
@@ -87,8 +99,14 @@ const RegisterPage: React.FC = () => {
           </Button>
         </form>
         <Box sx={{ marginTop: 2, textAlign: 'center' }}>
-          <Typography variant="body2">Already have an account? Log In</Typography>
+          <Typography variant="body2">
+            Already have an account?{' '}
+            <Link to="/login" style={{ textDecoration: 'none' }}>
+              Log In
+            </Link>
+          </Typography>
         </Box>
+        {/* Add the Toggle Theme Button here */}
         <Button
           variant="outlined"
           color="secondary"

@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ROUTES } from "./navigation/routes";
 import NotFoundPage from "./pages/NotFoundPage";
 import Layout from "./components/Layout";
+import { AuthProvider } from "./pages/context/AuthProvider";
 
 
 const App: React.FC = () => {
@@ -16,7 +17,9 @@ const App: React.FC = () => {
   ]);
 
   return (
+    <AuthProvider>
       <RouterProvider router={router} />
+    </AuthProvider>
   );
 };
 

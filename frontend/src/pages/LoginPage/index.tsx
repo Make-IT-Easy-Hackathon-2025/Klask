@@ -1,11 +1,26 @@
-// src/LoginPage.tsx
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { TextField, Button, Typography, Container, Paper, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // To navigate after successful login
 import { ThemeContext } from '../../ThemeContext';
+import { useAuth } from '../context/AuthProvider';
 
 const LoginPage: React.FC = () => {
   const { toggleTheme } = useContext(ThemeContext);
+  const { login } = useAuth(); 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      await login(email, password);
+      navigate('/'); // Redirect to home or dashboard after successful login
+    } catch (error) {
+      setError("Invalid email or password");
+    }
+  };
 
   return (
     <Container
@@ -31,7 +46,7 @@ const LoginPage: React.FC = () => {
         <Typography variant="h5" sx={{ marginBottom: 2 }}>
           Login
         </Typography>
-        <form style={{ width: '100%' }}>
+        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           <TextField
             label="Email"
             type="email"
@@ -39,6 +54,8 @@ const LoginPage: React.FC = () => {
             fullWidth
             margin="normal"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
           <TextField
@@ -48,8 +65,11 @@ const LoginPage: React.FC = () => {
             fullWidth
             margin="normal"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
+          {error && <Typography color="error">{error}</Typography>}
           <Button
             variant="contained"
             color="primary"
