@@ -1,19 +1,25 @@
-import React, { useContext } from "react";
-import { ThemeContext } from "./ThemeContext";
-import { Button, Container, Typography } from "@mui/material";
+import React from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ROUTES } from "./navigation/routes";
+import NotFoundPage from "./pages/NotFoundPage";
+import Layout from "./components/Layout";
+import { AuthProvider } from "./pages/context/AuthProvider";
+
 
 const App: React.FC = () => {
-  const { toggleTheme } = useContext(ThemeContext);
+
+  const router = createBrowserRouter([
+    {
+      element: <Layout />,
+      errorElement: <NotFoundPage />,
+      children: ROUTES,
+    },
+  ]);
 
   return (
-    <Container maxWidth="sm" style={{ textAlign: "center", marginTop: "2rem" }}>
-      <Typography variant="h4" gutterBottom>
-        Material UI Theming Example
-      </Typography>
-      <Button variant="contained" color="primary" onClick={toggleTheme}>
-        Toggle Theme
-      </Button>
-    </Container>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   );
 };
 
