@@ -104,7 +104,9 @@ const RegisterPage: React.FC = () => {
             fullWidth
             sx={{ marginBottom: 2, fontWeight: 'bold' }}
           >
-            Register
+                        <Typography variant="button" sx={{ color: "white", fontWeight: 'bold' }}>
+                          Register
+                        </Typography>
           </Button>
         </form>
         <Box sx={{ marginTop: 2, textAlign: "center" }}>

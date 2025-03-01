@@ -5,6 +5,8 @@ import MailIcon from "@mui/icons-material/Mail";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate, useLocation } from "react-router-dom";
 import GroupNavbar from "../GroupNavbar";
+import lightLogo from "../../assets/light.png";
+import darkLogo from "../../assets/dark.png";
 
 interface NavBarProps {
   children: React.ReactNode;
@@ -17,11 +19,17 @@ const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
   const location = useLocation();
   const theme = useTheme();
 
+  const logo = theme.palette.mode === 'light' ? darkLogo : lightLogo;
+
+
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <AppBar position="static" sx={{ backgroundColor: theme.palette.primary.main }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="h6">MOTIVIO</Typography>
+        
+        <Box onClick={() => navigate("/home")} sx={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+            <img src={logo} alt="Motivo Logo" style={{ width: '24vh', height: 'auto'}} />
+          </Box>        
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {/* Groups Icon */}
             <IconButton

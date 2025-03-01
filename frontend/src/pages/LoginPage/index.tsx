@@ -85,7 +85,9 @@ const LoginPage: React.FC = () => {
             fullWidth
             sx={{ marginTop: 2, fontWeight: 'bold' }}
           >
-            Log In
+            <Typography variant="button" sx={{ color: "white", fontWeight: 'bold' }}>
+              Log In
+            </Typography>
           </Button>
         </form>
         <Box sx={{ marginTop: 2, textAlign: "center" }}>
