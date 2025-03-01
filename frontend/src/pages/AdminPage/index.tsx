@@ -42,7 +42,7 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import NavBar from "../../components/Navbar";
-import { getGroupUsers } from "../../api";
+import { getGroupUsers, getUserByEmail, getUserById, sendNotification } from "../../api";
 import LoadingPage from "../LoadingPage";
 interface GroupUser {
   _id: string;
@@ -164,17 +164,13 @@ const GroupManagePage: React.FC = () => {
       // await axios.post(`/api/groups/${groupId}/users`, { email: userEmail });
       
       // For now just update the state with a dummy user
-      const newUser: GroupUser = {
-        _id: Date.now().toString(),
-        name: userEmail.split('@')[0],
-        email: userEmail,
-        profilePicture: `https://mui.com/static/images/avatar/${Math.floor(Math.random() * 5) + 1}.jpg`,
-        role: "guest",
-        coins: 0,
-      };
-      
-      setUsers([...users, newUser]);
-      setFilteredUsers([...filteredUsers, newUser]);
+      const user = await getUserByEmail(userEmail);
+      if(!groupId){
+        setError("No group ID provided");
+        setLoading(false);
+        return;
+      }
+      const response = await sendNotification(user._id, groupId);
       setUserEmail("");
       setAddUserOpen(false);
       setSnackbar({

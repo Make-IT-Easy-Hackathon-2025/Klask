@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Box, Typography, Card, CardContent, Fab, Dialog, DialogTitle, TextField, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import NavBar from "../../components/Navbar";
@@ -24,6 +24,7 @@ const HomePage: React.FC = () => {
         setLoading(true);
         const userGroups = await getUserGroups(user._id); // or getCreatedGroups(user._id)
         setGroups(userGroups);
+        console.log(userGroups);
       } catch (error) {
         console.error("Error fetching groups", error);
       } finally {

@@ -49,7 +49,8 @@ export const ROUTES: RouteObject[] = [
   {
     path: PATHS.GROUP_MANAGE,
     element: <Manage />
-|},
+  },
+  {
     path: PATHS.GROUP_CHALLENGES,
     element: <ChallengesPage />,
   },
