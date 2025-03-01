@@ -8,6 +8,7 @@ export enum PATHS {
     PROFILE = "/profile",
     GROUP_SHOP = "/groups/:id/shop",
     GROUP_CHALLENGES = "/groups/:id/challenges",
+    GROUP_CHALLENGE_DETAIL = "/groups/:id/challenges/:challengeId",
     GROUP_LEADERBOARD = "/groups/:id/leaderboard",
     GROUP_MANAGE= "/groups/:id/manage"
 }
