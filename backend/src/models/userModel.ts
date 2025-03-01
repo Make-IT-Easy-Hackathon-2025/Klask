@@ -14,6 +14,7 @@ interface ICreatedChallenge {
 interface IUserGroup {
   GID: mongoose.Schema.Types.ObjectId;
   coins: number;
+  totalCoins: number;
   myChallenges: IChallengeStatus[];
   role: string; // e.g., "admin", "member"
   createdChallenges: ICreatedChallenge[];
@@ -25,6 +26,8 @@ interface IUser extends Document {
   desc: string;
   profilePicture: string;
   groups: IUserGroup[];
+  notifications: mongoose.Schema.Types.ObjectId[]; // Array of notification IDs
+
 }
 
 const UserSchema = new Schema<IUser>({
@@ -36,6 +39,7 @@ const UserSchema = new Schema<IUser>({
     {
       GID: { type: Schema.Types.ObjectId, ref: "Group" },
       coins: { type: Number, default: 0 },
+      totalCoins: { type: Number, default: 0 },
       myChallenges: [
         {
           challengeID: { type: Schema.Types.ObjectId, ref: "Challenge" },
@@ -52,6 +56,7 @@ const UserSchema = new Schema<IUser>({
       ],
     },
   ],
+  notifications: [{ type: Schema.Types.ObjectId, ref: "Notification" }]
 });
 
 

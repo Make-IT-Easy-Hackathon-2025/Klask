@@ -12,6 +12,7 @@ export interface IMyChallenges {
   export interface IUserGroup {
     GID: string; // Group ID
     coins: number;
+    totalCoins: number;
     myChallenges: IMyChallenges[]; // Array of challenges
     role: 'admin' | 'moderator' | 'user' | 'guest'; // Restricted to valid roles
     createdChallenges: ICreatedChallenge[]; // Array of created challenges

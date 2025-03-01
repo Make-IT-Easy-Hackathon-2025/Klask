@@ -23,6 +23,13 @@ export const getUserGroups = async (userId: string) => {
         return response.data.groups;
     } catch (error: any) {
         console.error("Error getting user groups:", error);
+
+export const getUserByEmail = async (email: string) => {
+    try {
+        const response = await axios.get(`${USER_ROUTE}/email/${email}`);
+        return response.data.user;
+    } catch (error: any) {
+        console.error("Error getting user by email:", error);
         throw new Error(error);
     }
 }
@@ -33,6 +40,13 @@ export const getCreatedGroups = async (userId: string) => {
         return response.data.groups;
     } catch (error: any) {
         console.error("Error getting created groups:", error);
+
+export const getUserById = async (id : string) => {
+    try {
+        const response = await axios.get(`${USER_ROUTE}/${id}`);
+        return response.data.user;
+    } catch (error: any) {
+        console.error("Error getting user by id:", error);
         throw new Error(error);
     }
 }
