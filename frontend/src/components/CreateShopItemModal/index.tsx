@@ -23,7 +23,7 @@ import { ShopItem } from '../../utils/types/dataTypes';
 interface CreateShopItemModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (item: Omit<ShopItem, 'id'> & { imageFile?: File }) => void;
+  onSave: (item: Omit<ShopItem, 'id'> ) => void;
   groupId: string;
 }
 
@@ -52,7 +52,8 @@ const CreateShopItemModal: React.FC<CreateShopItemModalProps> = ({
     availability: 'In Stock',
     price: '',
     image: '',
-    details: ''
+    details: '',
+    quantity: '',
   });
   
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -122,13 +123,13 @@ const CreateShopItemModal: React.FC<CreateShopItemModalProps> = ({
   const handleSubmit = () => {
     if (validate()) {
       onSave({
+        _id: '',
         name: formData.name,
         description: formData.description,
         availability: formData.availability,
         price: Number(formData.price),
         image: formData.image || imagePreview || undefined,
-        details: formData.details || undefined,
-        imageFile: imageFile || undefined
+        quantity: Number(formData.quantity)
       });
       
       // Reset form
@@ -138,7 +139,8 @@ const CreateShopItemModal: React.FC<CreateShopItemModalProps> = ({
         availability: 'In Stock',
         price: '',
         image: '',
-        details: ''
+        details: '',
+        quantity: ''
       });
       setImageFile(null);
       setImagePreview(null);
@@ -206,25 +208,19 @@ const CreateShopItemModal: React.FC<CreateShopItemModalProps> = ({
             inputProps={{ min: 1 }}
           />
           
-          <FormControl fullWidth margin="normal" error={!!errors.availability}>
-            <InputLabel>Availability</InputLabel>
-            <Select
-              name="availability"
-              value={formData.availability}
-              label="Availability"
-              onChange={handleChange}
-            >
-              <MenuItem value="In Stock">In Stock</MenuItem>
-              <MenuItem value="Limited">Limited</MenuItem>
-              <MenuItem value="Available">Available</MenuItem>
-              <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-            </Select>
-            {errors.availability && (
-              <Typography color="error" variant="caption">
-                {errors.availability}
-              </Typography>
-            )}
-          </FormControl>
+          <TextField
+            label="Quantity"
+            name="quantity"
+            type="number"
+            value={formData.quantity}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            error={!!errors.price}
+            helperText={errors.price}
+            required
+            inputProps={{ min: 1 }}
+          />
         </Box>
         
         {/* Image Upload Section */}
@@ -293,17 +289,6 @@ const CreateShopItemModal: React.FC<CreateShopItemModalProps> = ({
           </Box>
         </Box>
         
-        <TextField
-          label="Additional Details"
-          name="details"
-          value={formData.details}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          multiline
-          rows={2}
-          placeholder="Additional information about the item"
-        />
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 3 }}>
         <Button onClick={onClose}>Cancel</Button>

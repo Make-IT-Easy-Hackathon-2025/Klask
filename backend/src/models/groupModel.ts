@@ -21,5 +21,5 @@ interface IGroup extends Document {
     shopItems: [{ type: Schema.Types.ObjectId, ref: "ShopItem" }],
   });
   
-  export default mongoose.model<IGroup>("Group", GroupSchema);
-  
+  const Group = mongoose.model<IGroup>("Group", GroupSchema);
+  export default Group
