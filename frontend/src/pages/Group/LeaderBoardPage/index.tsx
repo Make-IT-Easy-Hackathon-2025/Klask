@@ -24,6 +24,7 @@ import {
   MonetizationOn as CoinIcon,
 } from "@mui/icons-material";
 import Navbar from "../../../components/Navbar";
+import GroupNavbar from "../../../components/GroupNavbar";
 
 const GroupPageLeaderBoard: React.FC = () => {
   const theme = useTheme();
@@ -59,50 +60,9 @@ const GroupPageLeaderBoard: React.FC = () => {
 
   return (
     <>
-      <Navbar>
-        {/* Second Navigation Bar */}
-        <AppBar
-          position="static"
-          sx={{
-            boxShadow: "none",
-            bgcolor: theme.palette.secondary.main,
-            mt: 0,
-          }}
-        >
-          <Toolbar>
-            {/* Left Side: Buttons */}
-            <Box sx={{ flexGrow: 1, display: "flex", gap: 2 }} >
-              <Button color="inherit" startIcon={<LeaderboardIcon />}>
-                Leaderboard
-              </Button>
-              <Button color="inherit" startIcon={<TasksIcon />}>
-                Tasks
-              </Button>
-              <Button color="inherit" startIcon={<ShopIcon />}>
-                Shop
-              </Button>
-            </Box>
 
-            {/* Right Side: Group Info */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }} >
-              <Avatar alt="Group Icon" src="https://via.placeholder.com/40" />
-              <Typography
-                variant="body1"
-                sx={{ color: theme.palette.text.primary }}
-              >
-                Group Name
-              </Typography>
-              <CoinIcon sx={{ color: theme.palette.text.primary }} />
-              <Typography
-                variant="body1"
-                sx={{ color: theme.palette.text.primary }}
-              >
-                5000
-              </Typography>
-            </Box>
-          </Toolbar>
-        </AppBar>
-
+      <Navbar isGroupPage={true} activeTab="leaderboard">
+    
         {/* Main Content: Leaderboard */}
         <Container sx={{ mt: 4 }}>
           <Typography

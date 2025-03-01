@@ -4,12 +4,15 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import MailIcon from "@mui/icons-material/Mail";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate, useLocation } from "react-router-dom";
+import GroupNavbar from "../GroupNavbar";
 
 interface NavBarProps {
   children: React.ReactNode;
+  isGroupPage?: boolean;
+  activeTab?: "leaderboard" | "challenges" | "shop" | "manage";
 }
 
-const NavBar: React.FC<NavBarProps> = ({ children }) => {
+const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -49,7 +52,7 @@ const NavBar: React.FC<NavBarProps> = ({ children }) => {
           </Box>
         </Toolbar>
       </AppBar>
-
+      {isGroupPage && <GroupNavbar activeTab={activeTab} />}
       <Container sx={{ flexGrow: 1, overflowY: "auto", padding: 2 }}>{children}</Container>
     </Box>
   );

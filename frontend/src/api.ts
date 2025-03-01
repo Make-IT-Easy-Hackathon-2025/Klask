@@ -64,5 +64,15 @@ export const createGroup = async (name: string, description: string, coin: {name
         throw new Error(error);
     }
 }
+
+export const getGroupById = async (id: string) => {
+    try {
+        const response = await axios.get(`${GROUP_ROUTE}/${id}`);
+        return response.data.group;
+    } catch (error: any) {
+        console.error("Error getting group by id:", error);
+        throw new Error(error);
+    }
+}
     
     
