@@ -41,13 +41,14 @@ export interface IMyChallenges {
   }
   
   export interface ShopItem {
-    id: string;
+    _id: string;
     name: string;
     description: string;
     availability: string;
     price: number;
     image?: string;
     details?: string;
+    quantity: number;
   }
 
   export interface IChallenge {

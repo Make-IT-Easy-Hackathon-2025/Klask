@@ -93,9 +93,9 @@ export const getGroupUsers = async (id: string) => {
     
 
 // Shop Endoints
-export const getShopItemsByGroupId = async (groupId: string) => {
+export const getAllShopItemsByGroupId = async (groupId: string) => {
     try {
-        const response = await axios.get(`${SHOP_ROUTE}/group/${groupId}`);
+        const response = await axios.get(`${SHOP_ROUTE}/items/${groupId}`);
         return response.data.items;
     } catch (error: any) {
         console.error("Error getting shop items:", error);
@@ -117,12 +117,13 @@ export const createShopItem = async (shopItemData: {
     name: string;
     description?: string;
     price: number;
-    imageUrl?: string;
+    image?: string;
     groupId: string;
-    quantity?: number;
+    availability: string;
+    quantity: number;
 }) => {
     try {
-        const response = await axios.post(`${SHOP_ROUTE}`, shopItemData);
+        const response = await axios.post(`${SHOP_ROUTE}/add-item`, shopItemData);
         return response.data.item;
     } catch (error: any) {
         console.error("Error creating shop item:", error);
@@ -215,6 +216,39 @@ export const sendNotification = async (userId: string, groupId: string) => {
         throw new Error(error);
     }
 }
+
+export const updateShopItem = async (shopItemData: {
+    name: string;
+    description?: string;
+    price: number;
+    imageUrl?: string;
+    groupId: string;
+    quantity?: number;
+    availability: string;
+}) => {
+    try {
+        const response = await axios.post(`${SHOP_ROUTE}/update`, shopItemData);
+        return response.data.item;
+    } catch (error: any) {
+        console.error("Error updating shop item:", error);
+        throw new Error(error);
+    }
+};
+
+export const purchaseShopItem = async (userId: string, groupId: string, itemId: string, quantity: number) => {
+    try {
+        const response = await axios.post(`${SHOP_ROUTE}/purchase`, {
+            userId,
+            groupId,
+            itemId,
+            quantity
+        });
+        return response.data;
+    } catch (error: any) {
+        console.error("Error purchasing item:", error);
+        throw error;
+    }
+};
 
 export const joinChallenge = async (userId: string, challengeCode: string, groupId: string) => {
     try {
