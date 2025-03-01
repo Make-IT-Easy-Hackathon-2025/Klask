@@ -1,9 +1,13 @@
 import React from "react";
 import { RouteObject } from "react-router-dom";
 import { PATHS } from "./paths";
+
+import GroupPage from "../pages/GroupPageLeaderBoard";
+import GroupPageLeaderBoard from "../pages/GroupPageLeaderBoard";
 import HomePage from "../pages/HomePage";
 import Groups from "../pages/Groups";
 import ProfilePage from "../pages/ProfilePage";
+
 
 const RegisterPage = React.lazy(() => import("../pages/RegisterPage"));
 const LandingPage = React.lazy(() => import("../pages/LandingPage"));
@@ -26,6 +30,10 @@ export const ROUTES: RouteObject[] = [
   {
     path: PATHS.REGISTER_PAGE,
     element: <RegisterPage/>,
+  },
+  {
+    path: PATHS.GROUP_PAGE_LEADERBOARD,
+    element: <GroupPageLeaderBoard/>
   },
   {
     path: PATHS.GROUPS,

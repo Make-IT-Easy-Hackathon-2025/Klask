@@ -4,10 +4,10 @@ import { createTheme } from "@mui/material/styles";
 export const lightTheme = createTheme({
   palette: {
     mode: "light",
-    primary: { main: "#FFCF50" }, // Light mode primary color
-    secondary: { main: "#A4B465" }, // Light mode secondary color
-    background: { default: "#626F47", paper: "#9aa87d" }, // Light mode background
-    text: { primary: "#FEFAE0", secondary: "#FEFAE0" }, // Light mode text
+    primary: { main: "#e3975b" }, // Light mode primary color
+    secondary: { main: "#99BC85" }, // Light mode secondary color
+    background: { default: "#71915e", paper: "#9aa87d" }, // Light mode background
+    text: { primary: "#3c4a35", secondary: "#3c4a35" }, // Light mode text
   },
 });
 
