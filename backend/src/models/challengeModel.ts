@@ -7,6 +7,7 @@ interface IChallenge extends Document {
     users: mongoose.Schema.Types.ObjectId[];
     creator: mongoose.Schema.Types.ObjectId;
     code: string;
+
   }
   
   const ChallengeSchema = new Schema<IChallenge>({
@@ -16,6 +17,7 @@ interface IChallenge extends Document {
     users: [{ type: Schema.Types.ObjectId, ref: "User" }],
     creator: { type: Schema.Types.ObjectId, ref: "User" },
     code: { type: String, required: true },
+
   });
   
   export default mongoose.model<IChallenge>("Challenge", ChallengeSchema);
