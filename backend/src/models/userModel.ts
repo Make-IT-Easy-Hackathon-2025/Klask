@@ -20,7 +20,7 @@ interface IUserGroup {
   createdChallenges: ICreatedChallenge[];
 }
 
-interface IUser extends Document {
+export interface IUser extends Document {
   name: string;
   email: string;
   desc: string;

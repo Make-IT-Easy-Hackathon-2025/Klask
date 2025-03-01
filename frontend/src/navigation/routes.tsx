@@ -11,8 +11,12 @@ const RegisterPage = React.lazy(() => import("../pages/RegisterPage"));
 const LandingPage = React.lazy(() => import("../pages/LandingPage"));
 const LoginPage = React.lazy(() => import("../pages/LoginPage"));
 const InboxPage = React.lazy(() => import("../pages/Inbox"));
-const ChallengesDetailedPage = React.lazy(() => import("../pages/Group/ChallengeDetailPage"));
 
+const Manage = React.lazy(() => import("../pages/AdminPage"));
+
+  const ChallengesDetailedPage = React.lazy(() => import("../pages/Group/ChallengeDetailPage"));
+
+  
 export const ROUTES: RouteObject[] = [
   {
     path: PATHS.LANDING_PAGE,
@@ -43,6 +47,9 @@ export const ROUTES: RouteObject[] = [
     element: <ProfilePage />,
   },
   {
+    path: PATHS.GROUP_MANAGE,
+    element: <Manage />
+|},
     path: PATHS.GROUP_CHALLENGES,
     element: <ChallengesPage />,
   },
