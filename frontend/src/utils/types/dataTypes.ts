@@ -49,3 +49,13 @@ export interface IMyChallenges {
     image?: string;
     details?: string;
   }
+
+  export interface IChallenge {
+    _id: string; // MongoDB ObjectId as string
+    title: string;
+    description: string;
+    coinsValue: number;
+    creator: string; // User ObjectId
+    users: string[]; // Array of user ObjectIds
+    code: string;
+  }

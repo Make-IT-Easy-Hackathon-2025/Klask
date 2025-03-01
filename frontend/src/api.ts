@@ -5,8 +5,10 @@ export const PORT = 8080;
 export const BASE_ROUTE = `${BASE_URL}${PORT}`;
 const USER_ROUTE = `${BASE_ROUTE}/api/users`;
 const GROUP_ROUTE = `${BASE_ROUTE}/api/groups`;
+const CHALLENGE_ROUTE = `${BASE_ROUTE}/api/challenges`;
 const NOTIFICATION_ROUTE = `${BASE_ROUTE}/api/notifications`;
 const SHOP_ROUTE = `${BASE_ROUTE}/api/shop`;
+
 
 export const registerUser = async (email: string, name: string) => {
     try{
@@ -89,6 +91,7 @@ export const getGroupUsers = async (id: string) => {
     }
 }
     
+
 // Shop Endoints
 export const getShopItemsByGroupId = async (groupId: string) => {
     try {
@@ -126,7 +129,49 @@ export const createShopItem = async (shopItemData: {
         throw new Error(error);
     }
 }
-// ...existing code...
+
+
+export const createChallenge = async (
+    title: string,
+    description: string,
+    coinsValue: number,
+    creatorId: string,
+    groupId: string
+) => {
+    try {
+        const response = await axios.post(`${BASE_ROUTE}/api/challenges/create`, {
+            title,
+            description,
+            coinsValue,
+            creatorId,
+            groupId
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error creating challenge:", error);
+        throw error;
+    }
+};
+
+export const getCreatedChallenges= async (userId: string,groupId: string) => {
+    try {
+        const response = await axios.get(`${CHALLENGE_ROUTE}/${userId}/${groupId}`);
+        return response.data.data;
+    } catch (error) {
+        console.error("Error fetching challenge:", error);
+        throw error;
+    }
+};
+
+export const getChallengeById = async (challengeId: string) => {
+    try {
+        const response = await axios.get(`${CHALLENGE_ROUTE}/detail/${challengeId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching challenge:", error);
+        throw error;
+    }
+};
 
 // Get user notifications
 export const getUserNotifications = async (userId: string) => {
@@ -170,3 +215,4 @@ export const sendNotification = async (userId: string, groupId: string) => {
         throw new Error(error);
     }
 }
+
