@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Avatar, Divider, Button, Card, CardContent, Fab, Dialog, DialogTitle, TextField, Box as MuiBox } from "@mui/material";
+import { Box, Typography, Avatar, Divider, Button, Fab, Dialog, DialogTitle, TextField, Box as MuiBox, Badge, useTheme } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import NavBar from "../../components/Navbar";
 import { IGroup } from "../../utils/types/dataTypes";
 import { useAuth } from "../../context/AuthProvider";
-import { createGroup, getCreatedGroups, getUserGroups } from "../../api";
+import { createGroup, getCreatedGroups, updateUser} from "../../api";
 import LoadingPage from "../LoadingPage";
 import { useNavigate } from "react-router-dom";
-import GroupCard from "../../components/GroupCard";
+import GroupCard from "../../components/GroupCard"
+import { IconButton } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
 
 const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
+  const theme = useTheme();
+
+  const [editMode, setEditMode] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [editedProfilePic, setEditedProfilePic] = useState<File | null>(null);
+  const [previewProfilePic, setPreviewProfilePic] = useState<string | null>(null);
+
   const [groups, setGroups] = useState<IGroup[]>([
     {
         _id: "1",
@@ -33,6 +43,12 @@ const ProfilePage: React.FC = () => {
   ]);
 
   useEffect(() => {
+    if (user) {
+      setEditedName(user.name);
+    }
+  }, [user]);
+
+  useEffect(() => {
 
     const fetchGroups = async () => {
       if(!user) {
@@ -50,8 +66,6 @@ const ProfilePage: React.FC = () => {
       }
     } 
     fetchGroups();
-    
-
   }, [user]);
 
   const [open, setOpen] = useState(false);
@@ -104,6 +118,61 @@ const handleLogout = () => {
     navigate("/");
 };
 
+ // Handle profile image selection
+ const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (e.target.files && e.target.files[0]) {
+    const file = e.target.files[0];
+    setEditedProfilePic(file);
+    setPreviewProfilePic(URL.createObjectURL(file));
+  }
+};
+
+const handleSaveChanges = async () => {
+  if (!user) return;
+  
+  try {
+    let profilePicUrl = user.profilePicture;
+    
+    // Here you would typically upload the image file to your storage service
+    // and get back a URL. For now, we'll use the preview URL as a placeholder.
+    if (editedProfilePic && previewProfilePic) {
+      profilePicUrl = previewProfilePic;
+      // In a real implementation, you would:
+      // 1. Upload the image to storage
+      // 2. Get back the URL
+      // 3. Use that URL for updating the user
+    }
+    
+    await updateUser(user._id, editedName, profilePicUrl);
+    
+    // Update the user in context/state
+    if (user) {
+      const updatedUser = {
+        ...user,
+        name: editedName,
+        profilePicture: profilePicUrl
+      };
+      // For now, refresh the page to see changes
+      window.location.reload();
+    }
+    
+    setEditMode(false);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+  }
+};
+
+// Toggle edit mode
+const toggleEditMode = () => {
+  if (editMode) {
+    // Save changes
+    handleSaveChanges();
+  } else {
+    // Enter edit mode
+    setEditMode(true);
+  }
+};
+
 if(loading) {
   return <NavBar><LoadingPage /></NavBar>
 }
@@ -119,15 +188,65 @@ if(loading) {
           alignItems: "center",
         }}
       >
-        {/* Profile Header */}
-        <Avatar
-          src={user?.profilePicture}
-          alt={user?.name}
-          sx={{ width: 120, height: 120, marginBottom: 2 }}
-        />
-        <Typography variant="h4" fontWeight="bold" sx={{ marginBottom: 1 }}>
-          {user?.name}
-        </Typography>
+        <Badge
+          overlap="circular"
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          badgeContent={
+            <IconButton 
+              size="small" 
+              sx={{ 
+                bgcolor: theme.palette.background.default,
+                border: `2px solid ${theme.palette.text.primary}`,
+                '&:hover': { bgcolor: theme.palette.background.paper}
+              }}
+              onClick={toggleEditMode}
+            >
+              {editMode ? <SaveIcon fontSize="small" /> : <EditIcon fontSize="small" />}
+            </IconButton>
+          }
+        >
+          {editMode && (
+            <input
+              accept="image/*"
+              style={{ display: 'none' }}
+              id="profile-pic-upload"
+              type="file"
+              onChange={handleProfilePicChange}
+            />
+          )}
+          <label htmlFor={editMode ? "profile-pic-upload" : undefined}>
+            <Avatar
+              src={previewProfilePic || user?.profilePicture}
+              alt={user?.name}
+              sx={{ 
+                width: 120, 
+                height: 120, 
+                marginBottom: 2,
+                cursor: editMode ? 'pointer' : 'default' 
+              }}
+            />
+          </label>
+        </Badge>
+        {editMode ? (
+          <TextField
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
+            variant="outlined"
+            size="small"
+            InputProps={{
+              sx: { 
+                typography: 'h4', 
+                fontWeight: 'bold', 
+                textAlign: 'center',
+                marginBottom: 1
+              }
+            }}
+          />
+        ) : (
+          <Typography variant="h4" fontWeight="bold" sx={{ marginBottom: 1 }}>
+            {user?.name}
+          </Typography>
+        )}
         <Typography variant="body1" color="textSecondary" sx={{ marginBottom: 2 }}>
           {user?.email}
         </Typography>
@@ -138,12 +257,16 @@ if(loading) {
           {user?.desc}
         </Typography>
 
-        {/* Buttons for user actions */}
-        <Button variant="contained" color="primary" sx={{ marginBottom: 2 }}>
-          Edit Profile
-        </Button>
-        <Button variant="outlined" color="secondary" onClick={() => handleLogout()}>
-          Log Out
+        <Button
+          onClick={handleLogout}
+          variant="outlined"
+          sx={{
+            position: "absolute",
+            bottom: 16,
+            left: 16,
+          }}
+        >
+          Logout
         </Button>
 
         {/* My Groups Section */}

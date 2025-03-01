@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Box, Paper } from '@mui/material';
+import { TextField, Button, Typography, Container, Box, Paper, useTheme } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom'; // To navigate after successful registration
 import ErrorMessage from "../../components/ErrorMessage";
 import { useAuth } from '../../context/AuthProvider';
 
 const RegisterPage: React.FC = () => {
   const { register } = useAuth(); 
+  const theme = useTheme();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,6 +32,7 @@ const RegisterPage: React.FC = () => {
     <Container
       sx={{
         height: "100vh",
+        width: "70vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -48,7 +50,7 @@ const RegisterPage: React.FC = () => {
           backgroundColor: (theme) => theme.palette.background.paper,
         }}
       >
-        <Typography variant="h5" sx={{ marginBottom: 2 }}>
+        <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 'bold' }}>
           Create an Account
         </Typography>
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
@@ -100,7 +102,7 @@ const RegisterPage: React.FC = () => {
             color="primary"
             type="submit"
             fullWidth
-            sx={{ marginTop: 2 }}
+            sx={{ marginBottom: 2, fontWeight: 'bold' }}
           >
             Register
           </Button>
@@ -108,7 +110,16 @@ const RegisterPage: React.FC = () => {
         <Box sx={{ marginTop: 2, textAlign: "center" }}>
           <Typography variant="body2">
             Already have an account?{" "}
-            <Link to="/login" style={{ textDecoration: "none" }}>
+            <Link 
+              to="/login" 
+              style={{ 
+              textDecoration: "none", 
+              color: theme.palette.primary.main, 
+              fontWeight: 'bold' 
+              }}
+              onMouseOver={(e) => e.currentTarget.style.color = theme.palette.primary.dark}
+              onMouseOut={(e) => e.currentTarget.style.color = theme.palette.primary.main}
+            >
               Log In
             </Link>
           </Typography>

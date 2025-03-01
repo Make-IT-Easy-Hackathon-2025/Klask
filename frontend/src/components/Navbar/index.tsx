@@ -27,7 +27,7 @@ const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
             <IconButton
               color="inherit"
               onClick={() => navigate("/home")}
-              sx={location.pathname === "/home" ? { color: theme.palette.secondary.main, transform: "scale(1.2)" } : {}}
+              sx={location.pathname === "/home" ? { color: theme.palette.secondary.main, transform: "scale(1.3)" } : {}}
             >
               <GroupsIcon />
             </IconButton>
@@ -36,7 +36,7 @@ const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
             <IconButton
               color="inherit"
               onClick={() => navigate("/inbox")}
-              sx={location.pathname === "/inbox" ? { color: theme.palette.secondary.main, transform: "scale(1.2)" } : {}}
+              sx={location.pathname === "/inbox" ? { color: theme.palette.secondary.main, transform: "scale(1.3)" } : {}}
             >
               <MailIcon />
             </IconButton>
@@ -45,7 +45,7 @@ const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
             <IconButton
               color="inherit"
               onClick={() => navigate("/profile")}
-              sx={location.pathname === "/profile" ? { color: theme.palette.secondary.main, transform: "scale(1.2)" } : {}}
+              sx={location.pathname === "/profile" ? { color: theme.palette.secondary.main, transform: "scale(1.3)" } : {}}
             >
               <AccountCircleIcon />
             </IconButton>
