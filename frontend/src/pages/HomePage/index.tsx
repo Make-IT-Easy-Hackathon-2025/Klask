@@ -67,7 +67,7 @@ const HomePage: React.FC = () => {
             />
           ))
         ) : (
-          <Typography variant="body1" color="textSecondary">
+          <Typography variant="body1" color="textSecondary" sx={{ fontStyle: 'italic' }}>
             You are not part of any group.
           </Typography>
         )}

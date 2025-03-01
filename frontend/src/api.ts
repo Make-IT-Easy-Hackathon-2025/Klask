@@ -245,4 +245,13 @@ export const approveChallenge = async (challengeId: string, userId: string, grou
         throw new Error(error);
     }
 };
+export const updateUser = async (id: string, name: string, profilePicture: string) => {
+    try {
+        const response = await axios.put(`${USER_ROUTE}/${id}`, {name, profilePicture});
+        return response.data;
+    } catch (error: any) {
+        console.error("Error updating user:", error);
+        throw new Error(error);
+    }
+}
 
