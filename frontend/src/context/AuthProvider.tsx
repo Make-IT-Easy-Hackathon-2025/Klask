@@ -15,6 +15,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   loading: boolean;
   isAuthenticated: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -54,7 +55,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const loginResponse = await signInWithEmailAndPassword(auth, email, password);
       if(loginResponse.user){
         const response = await getUserByEmail(email);
-        console.log(response)
         if(response){
           const newUser: IUser = { 
               _id: response._id,
@@ -93,9 +93,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       throw error;
     }
   };
+  const refreshUser = async () => {
+    try {
+      console.log("refreshing user");
+      const response = await getUserByEmail(user?.email || "");
+      if(response){
+        const newUser: IUser = { 
+            _id: response._id,
+            name: response.name,
+            email: user?.email || "",
+            desc: response.desc,
+            profilePicture: response.profilePicture,
+            groups: response.groups,
+        }
+        setUser(newUser);
+        localStorage.setItem("user", JSON.stringify(newUser));
+      }
+    }
+    catch (error) {
+      console.error("Error during refresh user", error);
+      throw error;
+    }
+  }
+  
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, isAuthenticated, refreshUser}}>
       {children}
     </AuthContext.Provider>
   );

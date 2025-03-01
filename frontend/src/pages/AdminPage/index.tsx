@@ -43,7 +43,6 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import NavBar from "../../components/Navbar";
 import { getGroupUsers, getUserByEmail, getUserById, sendNotification } from "../../api";
-import LoadingPage from "../LoadingPage";
 interface GroupUser {
   _id: string;
   name: string;

@@ -24,7 +24,6 @@ const HomePage: React.FC = () => {
         setLoading(true);
         const userGroups = await getUserGroups(user._id); // or getCreatedGroups(user._id)
         setGroups(userGroups);
-        console.log(userGroups);
       } catch (error) {
         console.error("Error fetching groups", error);
       } finally {
@@ -68,7 +67,7 @@ const HomePage: React.FC = () => {
             />
           ))
         ) : (
-          <Typography variant="body1" color="textSecondary">
+          <Typography variant="body1" color="textSecondary" sx={{ fontStyle: 'italic' }}>
             You are not part of any group.
           </Typography>
         )}

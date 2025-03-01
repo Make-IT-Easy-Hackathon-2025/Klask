@@ -49,4 +49,4 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, handleGroupClick }) => {
   );
 };
 
-export default GroupCard;
+export default GroupCard; 

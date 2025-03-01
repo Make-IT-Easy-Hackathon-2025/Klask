@@ -105,8 +105,8 @@ const ShopPage: React.FC = () => {
   }, [user, groupId]);
 
   const handleRedeemCoupon = () => {
-    console.log(`Redeeming coupon with code: ${couponCode}`);
-    setCouponCode("");
+
+    setCouponCode('');
     setRedeemModalOpen(false);
 
     // Here you would typically make an API call to redeem the coupon

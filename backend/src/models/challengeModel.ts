@@ -20,5 +20,5 @@ interface IChallenge extends Document {
 
   });
   
-  export default mongoose.model<IChallenge>("Challenge", ChallengeSchema);
-  
+  const Challenge = mongoose.model<IChallenge>("Challenge", ChallengeSchema);
+  export default Challenge;

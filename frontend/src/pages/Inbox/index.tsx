@@ -152,9 +152,7 @@ const InboxPage: React.FC = () => {
         </Typography>
 
         {notifications.length === 0 ? (
-          <Paper sx={{ p: 4, width: "100%", textAlign: "center" }}>
-            <Typography variant="body1">No notifications yet</Typography>
-          </Paper>
+            <Typography variant="body1" sx={{ fontStyle: 'italic' }}>No notifications yet</Typography>
         ) : (
           <List sx={{ width: "100%" }}>
             {notifications.map((notification) => (

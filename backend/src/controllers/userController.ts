@@ -58,3 +58,46 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
         res.status(500).json({ message: "Error getting user", error });
     }
 };
+
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { name, desc, profilePicture } = req.body;
+  
+  try {
+    // Find user first to check if it exists
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(404).json({ 
+        success: false, 
+        message: "User not found" 
+      });
+      return;
+    }
+
+    // Create update object with only provided fields
+    const updates: {[key: string]: any} = {};
+    if (name !== undefined) updates.name = name;
+    if (desc !== undefined) updates.desc = desc;
+    if (profilePicture !== undefined) updates.profilePicture = profilePicture;
+    
+    // Update the user
+    const updatedUser = await User.findByIdAndUpdate(
+      id, 
+      updates, 
+      { new: true } // Return the updated document
+    );
+    
+    res.status(200).json({ 
+      success: true, 
+      message: "User updated successfully", 
+      user: updatedUser 
+    });
+  } catch (error: any) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error updating user", 
+      error: error.message 
+    });
+  }
+};
