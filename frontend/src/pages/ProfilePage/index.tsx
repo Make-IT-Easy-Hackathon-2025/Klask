@@ -7,6 +7,7 @@ import { useAuth } from "../../context/AuthProvider";
 import { createGroup, getCreatedGroups, getUserGroups } from "../../api";
 import LoadingPage from "../LoadingPage";
 import { useNavigate } from "react-router-dom";
+import GroupCard from "../../components/GroupCard";
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -147,22 +148,11 @@ const handleGroupClick = (groupId: string) => {
           My Groups
         </Typography>
         {groups.map((group) => (
-          <Card key={group._id} sx={{ mb: 2, width:'100%' }} onClick={() => handleGroupClick(group._id)}>
-            <CardContent>
-              <MuiBox sx={{ display: "flex", alignItems: "center" }}>
-                <Avatar src={group.profilePic} sx={{ mr: 2 }} />
-                <Typography variant="h6">{group.name}</Typography>
-              </MuiBox>
-              <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                {group.description}
-              </Typography>
-              <MuiBox sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-{       group.coin.image !== undefined &&       
-  <Avatar src={group.coin.image} sx={{ width: 20, height: 20, mr: 1 }} />
-}                <Typography variant="body2">{group.coin.name}</Typography>
-              </MuiBox>
-            </CardContent>
-          </Card>
+          <GroupCard
+            key={group._id}
+            group={group}
+            handleGroupClick={handleGroupClick}
+          />
         ))}
 
         {/* Floating Add Button */}
