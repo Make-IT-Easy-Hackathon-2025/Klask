@@ -72,3 +72,49 @@ export const createGroup = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getUserGroups = async (req: Request, res: Response): Promise<void> => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId).populate({
+      path: 'groups.GID',
+      model: 'Group',
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const nonAdminGroups = user.groups.filter(group => group.role !== 'admin');
+
+    res.status(200).json({ groups: nonAdminGroups });
+  } catch (error: any) {
+    console.error("Error retrieving user groups:", error);
+    res.status(500).json({ message: "Error retrieving user groups", error });
+  }
+};
+
+export const getCreatedGroups = async (req: Request, res: Response): Promise<void> => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId).populate({
+      path: 'groups.GID',
+      model: 'Group',
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const AdminGroups = user.groups.filter(group => group.role == 'admin');
+
+    res.status(200).json({ groups: AdminGroups });
+  } catch (error: any) {
+    console.error("Error retrieving user groups:", error);
+    res.status(500).json({ message: "Error retrieving user groups", error });
+  }
+};

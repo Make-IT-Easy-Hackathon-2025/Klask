@@ -2,9 +2,9 @@ import React, { useState, useContext } from 'react';
 import { TextField, Button, Typography, Container, Box, Paper } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom'; // To navigate after successful registration
 import { ThemeContext } from '../../ThemeContext';
-import { useAuth } from '../context/AuthProvider';
 import { registerUser } from '../../api';
 import ErrorMessage from "../../components/ErrorMessage";
+import { useAuth } from '../../context/AuthProvider';
 
 const RegisterPage: React.FC = () => {
   const { toggleTheme } = useContext(ThemeContext); // Getting toggleTheme from ThemeContext
