@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AppBar, Toolbar, IconButton, Typography, Box, Container, Switch, useTheme } from "@mui/material";
 import GroupsIcon from "@mui/icons-material/Groups";
 import MailIcon from "@mui/icons-material/Mail";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate, useLocation } from "react-router-dom";
 import GroupNavbar from "../GroupNavbar";
+import { useAuth } from "../../context/AuthProvider";
 
 interface NavBarProps {
   children: React.ReactNode;
@@ -16,6 +17,12 @@ const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+  const {refreshUser} = useAuth();
+
+  useEffect(() => {
+    refreshUser();
+  }
+  ,[activeTab]);
 
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>

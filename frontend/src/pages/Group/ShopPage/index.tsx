@@ -99,7 +99,6 @@ const ShopPage: React.FC = () => {
   }, []);
 
   const handleRedeemCoupon = () => {
-    console.log(`Redeeming coupon with code: ${couponCode}`);
     setCouponCode('');
     setRedeemModalOpen(false);
     

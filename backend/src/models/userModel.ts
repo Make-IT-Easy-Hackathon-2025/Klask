@@ -5,8 +5,6 @@ interface IChallengeStatus {
   status: string; // e.g., "pending", "completed"
 }
 
-
-
 interface IUserGroup {
   GID: mongoose.Schema.Types.ObjectId;
   coins: number;
@@ -39,7 +37,7 @@ const UserSchema = new Schema<IUser>({
       myChallenges: [
         {
           challengeID: { type: Schema.Types.ObjectId, ref: "Challenge" },
-          status: { type: String, required: true },
+          status: { type: String, required: true, enum: ["pending", "completed", "active"]},
         },
       ],
       role: { type: String, required: true, enum: ["admin", "moderator", "user", "guest"] },

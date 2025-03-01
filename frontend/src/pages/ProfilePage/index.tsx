@@ -41,7 +41,6 @@ const ProfilePage: React.FC = () => {
       try{
         setLoading(true);
       const userGroups = await getCreatedGroups(user._id);
-      console.log(userGroups);
       setGroups(userGroups);
       } catch (error) {
           console.error("Error fetching groups", error);
@@ -94,8 +93,7 @@ const ProfilePage: React.FC = () => {
   };
 const navigate = useNavigate();
 const handleGroupClick = (groupId: string) => {
-  console.log("Group clicked:", groupId
-  );
+ 
   navigate(`/groups/${groupId}/leaderboard`);
 }
 

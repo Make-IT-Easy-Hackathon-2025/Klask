@@ -165,7 +165,7 @@ export const getCreatedChallenges= async (userId: string,groupId: string) => {
 
 export const getChallengeById = async (challengeId: string) => {
     try {
-        const response = await axios.get(`${CHALLENGE_ROUTE}/detail/${challengeId}`);
+        const response = await axios.get(`${CHALLENGE_ROUTE}/${challengeId}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching challenge:", error);
@@ -215,4 +215,34 @@ export const sendNotification = async (userId: string, groupId: string) => {
         throw new Error(error);
     }
 }
+
+export const joinChallenge = async (userId: string, challengeCode: string, groupId: string) => {
+    try {
+        const response = await axios.post(`${CHALLENGE_ROUTE}/join`, {userId, challengeCode, groupId});
+        return response.data;
+    } catch (error: any) {
+        console.error("Error joining challenge:", error);
+        throw new Error(error);
+    }
+    
+}
+export const getJoinedChallenges = async (userId: string, groupId: string) => {
+    try {
+        const response = await axios.get(`${CHALLENGE_ROUTE}/getJoined/${userId}/${groupId}`);
+        return response.data.data;
+    } catch (error) {
+        console.error("Error fetching challenge:", error);
+        throw error;
+    }
+}
+
+export const approveChallenge = async (challengeId: string, userId: string, groupId: string) => {
+    try {
+        const response = await axios.post(`${CHALLENGE_ROUTE}/approve`, {challengeId, userId, groupId});
+        return response.data;
+    } catch (error: any) {
+        console.error("Error approving challenge:", error);
+        throw new Error(error);
+    }
+};
 
