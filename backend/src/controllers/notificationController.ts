@@ -46,8 +46,7 @@ export const sendGroupInvitation = async (req: Request, res: Response): Promise<
     const notification = new Notification({
       message: `You've been invited to join the group "${group.name}"`,
       isInvite: true,
-      groupID: groupId,
-      // groupId: group._id,
+      groupId: groupId,
       // invitedBy: req.body.invitedBy, // If you want to track who sent the invite
     });
 
@@ -170,7 +169,6 @@ export const acceptGroupInvitation = async (req: Request, res: Response): Promis
       }
   
       const groupId = notification.groupID;
-  
       // Check if the group exists
       const group = await Group.findById(groupId);
       if (!group) {

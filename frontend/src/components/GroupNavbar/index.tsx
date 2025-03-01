@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -48,7 +48,15 @@ const GroupNavbar: React.FC<GroupToolbarProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const {user} = useAuth();
-  const userCoins = user?.groups.find(g => g.GID === groupId)?.coins;
+  const [userCoins, setUserCoins] = useState<number | undefined>(0);
+ 
+  useEffect(() => {
+    if (!user) return;
+    const userGroup = user.groups.find(g => g.GID === groupId);
+    
+    setUserCoins(userGroup?.coins);
+  }, [user, groupId]);
+
   const isAdmin = user?.groups.find(g => g.GID === groupId)?.role === 'admin';
   useEffect(() => {
     const fetchGroupData = async () => {
@@ -179,7 +187,7 @@ const GroupNavbar: React.FC<GroupToolbarProps> = ({
                 variant="body1"
                 sx={{ color: theme.palette.text.primary }}
               >
-                {userCoins !== undefined ? userCoins.toLocaleString() : '0'}
+                {userCoins !== undefined ? userCoins.toLocaleString() : '3'}
               </Typography>
             </>
           ) : (

@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AppBar, Toolbar, IconButton, Typography, Box, Container, Switch, useTheme } from "@mui/material";
 import GroupsIcon from "@mui/icons-material/Groups";
 import MailIcon from "@mui/icons-material/Mail";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate, useLocation } from "react-router-dom";
 import GroupNavbar from "../GroupNavbar";
+import { useAuth } from "../../context/AuthProvider";
 import lightLogo from "../../assets/light.png";
 import darkLogo from "../../assets/dark.png";
 
+        
 interface NavBarProps {
   children: React.ReactNode;
   isGroupPage?: boolean;
@@ -18,6 +20,12 @@ const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+  const {refreshUser} = useAuth();
+
+  useEffect(() => {
+    refreshUser();
+  }
+  ,[activeTab]);
 
   const logo = theme.palette.mode === 'light' ? darkLogo : lightLogo;
 

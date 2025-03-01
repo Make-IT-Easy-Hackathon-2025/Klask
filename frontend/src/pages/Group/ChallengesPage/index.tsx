@@ -22,26 +22,53 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../../components/Navbar";
 import { useAuth } from "../../../context/AuthProvider";
-import { createChallenge, getCreatedChallenges } from "../../../api";
+import { createChallenge, getCreatedChallenges, getGroupById, getJoinedChallenges, joinChallenge } from "../../../api";
 import { IChallenge } from "../../../utils/types/dataTypes";
+import { group } from "console";
 
+interface IChallengeJoined extends IChallenge{
+  status: string;
+}
 const ChallengesPage: React.FC = () => {
   const [challenges, setChallenges] = useState<IChallenge[]>([]);
+  const [joinedChallenges, setJoinedChallenges] = useState<IChallenge[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [challengeCode, setChallengeCode] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
   const [coinRewardError, setCoinRewardError] = useState<string | null>(null);
   const [newChallengeTitle, setNewChallengeTitle] = useState("");
   const [newChallengeDescription, setNewChallengeDescription] = useState("");
   const [newChallengeCoinReward, setNewChallengeCoinReward] = useState("");
-
+  
   const theme = useTheme();
   const navigate = useNavigate();
   const { id: groupId } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const isAuthorized = user?.groups.find((group) => group.GID === groupId)?.role === "admin" 
+  || user?.groups.find((group) => group.GID === groupId)?.role === "moderator";
+  
+  const [coin, setCoin] = useState<{name: string, img: string}>();
+
+  useEffect(() => {
+    const fetchCoin = async () => {
+      if(!groupId) return;
+      setLoading(true);
+      try{
+        if(!groupId) return;
+        const response = await getGroupById(groupId);
+
+        setCoin(response.coin);
+      } catch (error) {
+        console.error("Error fetching coin:", error);
+
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCoin();
+  }, [ groupId]);
 
   // In the fetchChallenges function, update the data mapping:
   useEffect(() => {
@@ -57,7 +84,7 @@ const ChallengesPage: React.FC = () => {
           return;
         }
 
-        const challengesData = await getCreatedChallenges(user._id, groupId);
+        const challengesData = await getCreatedChallenges(user._id, groupId)
         const formattedChallenges: IChallenge[] = challengesData.map(
           (challenge: IChallenge) => ({
             _id: challenge._id,
@@ -71,6 +98,7 @@ const ChallengesPage: React.FC = () => {
         );
 
         setChallenges(formattedChallenges);
+      
         setError(null);
       } catch (err) {
         console.error("Error fetching challenges:", err);
@@ -80,21 +108,62 @@ const ChallengesPage: React.FC = () => {
       }
     };
 
-    fetchChallenges();
-  }, [user, groupId]);
-
-  useEffect(() => {
-    const checkAdminStatus = async () => {
+    const fetchJoinedChallenges = async () => {
       if (!user || !groupId) return;
-      const groupData = user.groups.find((g) => g.GID === groupId);
-      setIsAdmin(groupData?.role === "admin");
-    };
 
-    checkAdminStatus();
+      try {
+        setLoading(true);
+        const group = user.groups.find((g) => g.GID === groupId);
+
+        if (!group) {
+          setError("Group not found");
+          return;
+        }
+
+        const challengesData = await getJoinedChallenges(user._id, groupId);
+        const formattedChallenges: IChallengeJoined[] = challengesData.map(
+        (item: { challengeID: IChallenge; status: string }) => ({
+          _id: item.challengeID._id,
+          title: item.challengeID.title,
+          description: item.challengeID.description,
+          coinsValue: item.challengeID.coinsValue,
+          creator: item.challengeID.creator,
+          users: item.challengeID.users,
+          code: item.challengeID.code,
+          status: item.status, // Include the status from the response
+        })
+      );
+      setJoinedChallenges(formattedChallenges);
+      setError(null);
+      } catch (err) {
+        console.error("Error fetching challenges:", err);
+        setError("Failed to load challenges");
+      } finally {
+        setLoading(false);
+      }
+    }
+    isAuthorized ? fetchChallenges() : fetchJoinedChallenges();
   }, [user, groupId]);
 
-  const handleJoinChallenge = () => {
-    console.log(`Joining challenge with code: ${challengeCode}`);
+
+
+  const handleJoinChallenge = async () => {
+    if (!user || !groupId) return;
+    try{
+      const response = await joinChallenge(user._id, challengeCode, groupId);
+      const newChallenge: IChallenge = {
+        _id: response.data._id,
+        title: response.data.title,
+        description: response.data.description,
+        coinsValue: response.data.coinsValue,
+        creator: response.data.creator,
+        users: response.data.users,
+        code: response.data.code,
+      };
+      setChallenges((prev) => [...prev, newChallenge]);
+    } catch (error) {
+      console.error("Error joining challenge :", error);
+    }
     setChallengeCode("");
     setJoinModalOpen(false);
   };
@@ -158,6 +227,9 @@ const ChallengesPage: React.FC = () => {
         return theme.palette.text.secondary;
     }
   };
+  const capitalize = (str: string) => {
+      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
 
   return (
     <NavBar isGroupPage={true} activeTab="challenges">
@@ -186,7 +258,7 @@ const ChallengesPage: React.FC = () => {
           </Typography>
         ) : (
           <Grid container spacing={3}>
-            {challenges.map((challenge, index) => (
+            {(isAuthorized ? challenges : joinedChallenges).map((challenge, index) => (
               <Grid item xs={12} sm={6} md={4} key={challenge._id}>
                 <Grow in={true} timeout={300 * (index + 1)}>
                   <Card
@@ -222,9 +294,9 @@ const ChallengesPage: React.FC = () => {
                         >
                           {challenge.title}
                         </Typography>
-                        <Box
+                        { !isAuthorized && <Box
                           sx={{
-                            bgcolor: getStatusColor("active"),
+                            bgcolor: getStatusColor((challenge as IChallengeJoined).status),
                             color: "#fff",
                             borderRadius: 1,
                             px: 1,
@@ -233,8 +305,8 @@ const ChallengesPage: React.FC = () => {
                             fontWeight: "bold",
                           }}
                         >
-                          Active
-                        </Box>
+                         {capitalize((challenge as IChallengeJoined).status)} 
+                        </Box>}
                       </Box>
                       <Typography
                         variant="body2"
@@ -254,7 +326,7 @@ const ChallengesPage: React.FC = () => {
                             color: theme.palette.primary.main,
                           }}
                         >
-                          {challenge.coinsValue} coins
+                          {challenge.coinsValue} {coin?.name}
                         </Typography>
                       </Box>
                     </CardContent>
@@ -265,7 +337,7 @@ const ChallengesPage: React.FC = () => {
           </Grid>
         )}
 
-        <Zoom in={!loading}>
+{     !isAuthorized &&  <Zoom in={!loading}>
           <Fab
             color="primary"
             aria-label="join challenge"
@@ -275,13 +347,13 @@ const ChallengesPage: React.FC = () => {
             <AddIcon />
           </Fab>
         </Zoom>
-
-        {isAdmin && (
+}
+        {isAuthorized && (
           <Zoom in={!loading}>
             <Fab
               color="secondary"
               aria-label="create challenge"
-              sx={{ position: "fixed", bottom: 24, left: 24, boxShadow: 3 }}
+              sx={{ position: "fixed", bottom: 24, right: 24, boxShadow: 3 }}
               onClick={() => setCreateModalOpen(true)}
             >
               <AddCircleIcon />
@@ -289,7 +361,7 @@ const ChallengesPage: React.FC = () => {
           </Zoom>
         )}
 
-        <Dialog
+        { !isAuthorized && <Dialog
           open={joinModalOpen}
           onClose={() => setJoinModalOpen(false)}
           PaperProps={{ sx: { borderRadius: 2, maxWidth: "400px" } }}
@@ -321,6 +393,7 @@ const ChallengesPage: React.FC = () => {
             </Button>
           </DialogActions>
         </Dialog>
+        }
 
         <Dialog
           open={createModalOpen}
@@ -376,7 +449,7 @@ const ChallengesPage: React.FC = () => {
               sx={{ mb: 2 }}
             />
           </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 3 }}>
+        {  isAuthorized && <DialogActions sx={{ px: 3, pb: 3 }}>
             <Button onClick={() => setCreateModalOpen(false)}>Cancel</Button>
             <Button
               variant="contained"
@@ -392,7 +465,8 @@ const ChallengesPage: React.FC = () => {
             >
               Create Challenge
             </Button>
-          </DialogActions>
+          </DialogActions> 
+}
         </Dialog>
       </Box>
     </NavBar>
