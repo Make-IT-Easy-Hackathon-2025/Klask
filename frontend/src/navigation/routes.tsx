@@ -10,6 +10,7 @@ const RegisterPage = React.lazy(() => import("../pages/RegisterPage"));
 const LandingPage = React.lazy(() => import("../pages/LandingPage"));
 const LoginPage = React.lazy(() => import("../pages/LoginPage"));
 const InboxPage = React.lazy(() => import("../pages/Inbox"));
+const Manage = React.lazy(() => import("../pages/AdminPage"));
 
 export const ROUTES: RouteObject[] = [
   {
@@ -40,4 +41,8 @@ export const ROUTES: RouteObject[] = [
     path: PATHS.PROFILE,
     element: <ProfilePage />,
   },
+  {
+    path: PATHS.GROUP_MANAGE,
+    element: <Manage />,
+  }
 ];

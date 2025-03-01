@@ -16,10 +16,10 @@ import {
   MonetizationOn as CoinIcon,
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { PATHS } from "../../navigation/paths";
 import { getGroupById } from "../../api";
 import { useAuth } from "../../context/AuthProvider";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 interface Group {
   _id: string;
@@ -49,7 +49,7 @@ const GroupNavbar: React.FC<GroupToolbarProps> = ({
   const [error, setError] = useState<string | null>(null);
   const {user} = useAuth();
   const userCoins = user?.groups.find(g => g.GID === groupId)?.coins;
-
+  const isAdmin = user?.groups.find(g => g.GID === groupId)?.role === 'admin';
   useEffect(() => {
     const fetchGroupData = async () => {
       if (!groupId) {
@@ -140,6 +140,19 @@ const GroupNavbar: React.FC<GroupToolbarProps> = ({
           >
             Shop
           </Button>
+          {isAdmin && (
+            <Button
+              color="inherit"
+              startIcon={<SettingsIcon />}
+              onClick={() => handleTabClick('manage')}
+              sx={{
+                fontWeight: activeTab === 'manage' ? 'bold' : 'normal',
+                borderBottom: activeTab === 'manage' ? `2px solid ${theme.palette.primary.main}` : 'none'
+              }}
+            >
+              Manage
+            </Button>
+          )}
         </Box>
 
         {/* Right Side: Group Info */}

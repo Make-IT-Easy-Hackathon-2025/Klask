@@ -74,5 +74,15 @@ export const getGroupById = async (id: string) => {
         throw new Error(error);
     }
 }
+
+export const getGroupUsers = async (id: string) => {
+    try {
+        const response = await axios.get(`${GROUP_ROUTE}/${id}/users`);
+        return response.data.users;
+    } catch (error: any) {
+        console.error("Error getting group users:", error);
+        throw new Error(error);
+    }
+}
     
     
