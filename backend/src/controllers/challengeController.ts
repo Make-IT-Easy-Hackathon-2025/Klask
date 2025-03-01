@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
 import Challenge from "../models/challengeModel";
-import User from "../models/userModel";
-
-
 
 // Get a challenge by ID
 export const getChallengeById = async (req: Request, res: Response): Promise<void> => {

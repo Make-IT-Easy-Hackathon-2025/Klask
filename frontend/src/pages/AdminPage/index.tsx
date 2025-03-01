@@ -228,9 +228,6 @@ const GroupManagePage: React.FC = () => {
         return <UserIcon />;
     }
   };
-  if(loading){
-    return <LoadingPage/>
-  }
 
   return (
     <NavBar isGroupPage={true} activeTab="manage">

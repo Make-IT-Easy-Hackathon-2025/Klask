@@ -1,12 +1,7 @@
 import React from "react";
 import {
-  AppBar,
-  Toolbar,
   Typography,
-  IconButton,
-  Button,
   Container,
-  Box,
   Avatar,
   List,
   ListItem,
@@ -14,17 +9,8 @@ import {
   ListItemText,
   useTheme,
 } from "@mui/material";
-import {
-  Group as GroupIcon,
-  Notifications as NotificationsIcon,
-  AccountCircle as ProfileIcon,
-  EmojiEvents as LeaderboardIcon,
-  Assignment as TasksIcon,
-  Store as ShopIcon,
-  MonetizationOn as CoinIcon,
-} from "@mui/icons-material";
+
 import Navbar from "../../../components/Navbar";
-import GroupNavbar from "../../../components/GroupNavbar";
 
 const GroupPageLeaderBoard: React.FC = () => {
   const theme = useTheme();

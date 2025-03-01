@@ -6,16 +6,27 @@ export const BASE_ROUTE = `${BASE_URL}${PORT}`;
 const USER_ROUTE = `${BASE_ROUTE}/api/users`;
 const GROUP_ROUTE = `${BASE_ROUTE}/api/groups`;
 const NOTIFICATION_ROUTE = `${BASE_ROUTE}/api/notifications`;
+const SHOP_ROUTE = `${BASE_ROUTE}/api/shop`;
 
 export const registerUser = async (email: string, name: string) => {
     try{
-        const response = await axios.post(`${USER_ROUTE}/register`, {email, name});
+        const response = axios.post(`${USER_ROUTE}/register`, {email, name});
         return response;
     }   catch (error : any) {
         console.error("Error logging in user:", error);
         throw new Error(error);
     }
 };
+
+export const getCreatedGroups = async (userId: string) => {
+    try {
+        const response = await axios.get(`${USER_ROUTE}/${userId}/createdGroups`);
+        return response.data.groups;
+    } catch (error: any) {
+        console.error("Error getting created groups:", error);
+
+    }
+}
 
 export const getUserGroups = async (userId: string) => {
     try {
@@ -26,6 +37,7 @@ export const getUserGroups = async (userId: string) => {
 
     }
 }
+
 export const getUserByEmail = async (email: string) => {
     try {
         const response = await axios.get(`${USER_ROUTE}/email/${email}`);
@@ -37,15 +49,6 @@ export const getUserByEmail = async (email: string) => {
     }
 }
 
-export const getCreatedGroups = async (userId: string) => {
-    try {
-        const response = await axios.get(`${USER_ROUTE}/${userId}/createdGroups`);
-        return response.data.groups;
-    } catch (error: any) {
-        console.error("Error getting created groups:", error);
-
-    }
-}
 export const getUserById = async (id : string) => {
     try {
         const response = await axios.get(`${USER_ROUTE}/${id}`);
@@ -86,6 +89,43 @@ export const getGroupUsers = async (id: string) => {
     }
 }
     
+// Shop Endoints
+export const getShopItemsByGroupId = async (groupId: string) => {
+    try {
+        const response = await axios.get(`${SHOP_ROUTE}/group/${groupId}`);
+        return response.data.items;
+    } catch (error: any) {
+        console.error("Error getting shop items:", error);
+        throw new Error(error);
+    }
+}
+
+export const getShopItemById = async (id: string) => {
+    try {
+        const response = await axios.get(`${SHOP_ROUTE}/${id}`);
+        return response.data.item;
+    } catch (error: any) {
+        console.error("Error getting shop item by id:", error);
+        throw new Error(error);
+    }
+}
+
+export const createShopItem = async (shopItemData: {
+    name: string;
+    description?: string;
+    price: number;
+    imageUrl?: string;
+    groupId: string;
+    quantity?: number;
+}) => {
+    try {
+        const response = await axios.post(`${SHOP_ROUTE}`, shopItemData);
+        return response.data.item;
+    } catch (error: any) {
+        console.error("Error creating shop item:", error);
+        throw new Error(error);
+    }
+}
 // ...existing code...
 
 // Get user notifications

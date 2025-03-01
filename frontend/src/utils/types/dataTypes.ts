@@ -40,3 +40,12 @@ export interface IMyChallenges {
     shopItems: string[]; // Array of ShopItem ObjectIds
   }
   
+  export interface ShopItem {
+    id: string;
+    name: string;
+    description: string;
+    availability: string;
+    price: number;
+    image?: string;
+    details?: string;
+  }

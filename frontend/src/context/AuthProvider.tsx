@@ -27,9 +27,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
-  });  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  });  
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
+  const [loading, setLoading] = useState<boolean>(true);
+  
   // Register function
   const register = async (email: string, password: string, name: string) => {
     try {
@@ -64,6 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
           setUser(newUser);
           localStorage.setItem("user", JSON.stringify(newUser));
+          localStorage.setItem("authenticated", "true");
           setIsAuthenticated(true);
           setLoading(false);
 
@@ -82,6 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setUser(null);
       localStorage.removeItem("user");
+      localStorage.removeItem("authenticated");
       setIsAuthenticated(false);
       await signOut(auth);
     } catch (error) {

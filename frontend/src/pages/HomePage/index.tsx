@@ -39,12 +39,9 @@ const HomePage: React.FC = () => {
   const handleGroupClick = (groupId: string) => {
     navigate(`/groups/${groupId}/leaderboard`);
   };
-
-  // Loading state
-  if (loading) {
-    return <LoadingPage />;
+  if(loading) {
+    return <NavBar><LoadingPage /></NavBar>
   }
-
   return (
     <NavBar>
       <Box
@@ -75,13 +72,6 @@ const HomePage: React.FC = () => {
             You are not part of any group.
           </Typography>
         )}
-
-        {/* Floating Add Button */}
-        <Box position="fixed" bottom={20} right={20}>
-          <Fab color="primary" onClick={() => navigate("/create-group")}>
-            <AddIcon />
-          </Fab>
-        </Box>
       </Box>
     </NavBar>
   );

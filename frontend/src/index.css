@@ -11,9 +11,16 @@ body {
   overflow-x: hidden;
 }
 
+/* Hide scrollbar for all elements */
+::-webkit-scrollbar {
+  display: none;
+}
+
 html{
   scroll-behavior: smooth;
   -webkit-scrollbar: hidden;
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE/Edge */
   background-color: var(--secondary-color);
 }
 

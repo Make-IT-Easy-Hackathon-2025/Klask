@@ -5,6 +5,7 @@ import userRoutes from './routes/userRoutes'
 import groupRoutes from './routes/groupRoutes'
 import challengeRoutes from './routes/challengeRoutes';
 import notificationRoutes from './routes/notificationRoutes'
+import shopRoutes from './routes/shopRoutes';
 const app = express();
 
 // Middleware
@@ -38,6 +39,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/challenges", challengeRoutes);
+app.use("/api/shop", shopRoutes);
 
 app.use("/api/groups", groupRoutes)
 app.use("/api/notifications", notificationRoutes)
