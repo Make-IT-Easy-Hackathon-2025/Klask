@@ -42,10 +42,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, handleGroupClick }) => {
           {group.description}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-          {group.coin.image && (
-            <Avatar src={group.coin.image} sx={{ width: 20, height: 20, mr: 1 }} />
-          )}
-          <Typography variant="body2">{group.coin.name}</Typography>
+         
         </Box>
       </CardContent>
     </Card>

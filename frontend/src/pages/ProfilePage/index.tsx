@@ -10,8 +10,7 @@ import { useNavigate } from "react-router-dom";
 import GroupCard from "../../components/GroupCard";
 
 const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
-  console.log(user);
+  const { user, logout } = useAuth();
   const [groups, setGroups] = useState<IGroup[]>([
     {
         _id: "1",
@@ -100,10 +99,14 @@ const handleGroupClick = (groupId: string) => {
   navigate(`/groups/${groupId}/leaderboard`);
 }
 
-  if(loading){
+const handleLogout = () => {
+    logout();
+    navigate("/");
+};
 
-    return <LoadingPage />
-  }
+if(loading) {
+  return <NavBar><LoadingPage /></NavBar>
+}
 
   return (
     <NavBar>
@@ -139,7 +142,7 @@ const handleGroupClick = (groupId: string) => {
         <Button variant="contained" color="primary" sx={{ marginBottom: 2 }}>
           Edit Profile
         </Button>
-        <Button variant="outlined" color="secondary">
+        <Button variant="outlined" color="secondary" onClick={() => handleLogout()}>
           Log Out
         </Button>
 

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Group from "../models/groupModel";
 import mongoose from "mongoose";
-import User, { IUser } from "../models/userModel";
+import User from "../models/userModel";
 
 export const createGroup = async (req: Request, res: Response) => {
   try {

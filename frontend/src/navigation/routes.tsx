@@ -6,6 +6,8 @@ import GroupPageLeaderBoard from "../pages/Group/LeaderBoardPage";
 import HomePage from "../pages/HomePage";
 import ProfilePage from "../pages/ProfilePage";
 import ChallengesPage from "../pages/Group/ChallengesPage";
+import ShopPage from "../pages/Group/ShopPage";
+import ShopItemDetailPage from "../pages/Group/ShopDetailPage";
 
 const RegisterPage = React.lazy(() => import("../pages/RegisterPage"));
 const LandingPage = React.lazy(() => import("../pages/LandingPage"));
@@ -50,12 +52,20 @@ export const ROUTES: RouteObject[] = [
     path: PATHS.GROUP_MANAGE,
     element: <Manage />
   },
-  {
+ {
     path: PATHS.GROUP_CHALLENGES,
     element: <ChallengesPage />,
   },
   {
     path: PATHS.GROUP_CHALLENGE_DETAIL,
     element: <ChallengesDetailedPage />,
+  },
+  {
+    path: PATHS.GROUP_SHOP,
+    element: <ShopPage/>
+  },
+  {
+    path: PATHS.GROUP_SHOP_ITEM,
+    element: <ShopItemDetailPage/>
   }
 ];

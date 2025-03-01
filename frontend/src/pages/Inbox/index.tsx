@@ -128,8 +128,8 @@ const InboxPage: React.FC = () => {
     return isInvite ? <InviteIcon color="primary" /> : <NotificationIcon />;
   };
 
-  if (loading && notifications.length === 0) {
-    return <LoadingPage />;
+  if(loading) {
+    return <NavBar><LoadingPage /></NavBar>
   }
 
   return (

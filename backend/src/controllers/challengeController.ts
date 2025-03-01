@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
 import Challenge from "../models/challengeModel";
-import User from "../models/userModel";
-
-
 
 export const getCreatedChallenges= async (req: Request, res: Response): Promise<void> => {
     const { userId, groupId } = req.params;
