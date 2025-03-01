@@ -88,7 +88,7 @@ export const getUserGroups = async (
 
     const nonAdminGroups = user.groups.filter(
       (group) => group.role !== "admin"
-    );
+    ).map((group) => group.GID);
 
     res.status(200).json({ groups: nonAdminGroups });
   } catch (error: any) {

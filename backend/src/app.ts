@@ -4,6 +4,7 @@ import logger from './utils/logger';
 import userRoutes from './routes/userRoutes'
 import groupRoutes from './routes/groupRoutes'
 import challengeRoutes from './routes/challengeRoutes';
+import notificationRoutes from './routes/notificationRoutes'
 const app = express();
 
 // Middleware
@@ -38,4 +39,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/challenges", challengeRoutes);
 
+app.use("/api/groups", groupRoutes)
+app.use("/api/notifications", notificationRoutes)
 export default app;

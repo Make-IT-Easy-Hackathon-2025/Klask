@@ -5,6 +5,7 @@ export const PORT = 8080;
 export const BASE_ROUTE = `${BASE_URL}${PORT}`;
 const USER_ROUTE = `${BASE_ROUTE}/api/users`;
 const GROUP_ROUTE = `${BASE_ROUTE}/api/groups`;
+const NOTIFICATION_ROUTE = `${BASE_ROUTE}/api/notifications`;
 
 export const registerUser = async (email: string, name: string) => {
     try{
@@ -85,4 +86,47 @@ export const getGroupUsers = async (id: string) => {
     }
 }
     
-    
+// ...existing code...
+
+// Get user notifications
+export const getUserNotifications = async (userId: string) => {
+    try {
+        const response = await axios.get(`${NOTIFICATION_ROUTE}/${userId}`);
+        return response.data.notifications;
+    } catch (error: any) {
+        console.error("Error getting user notifications:", error);
+        throw new Error(error);
+    }
+}
+
+// Accept notification (for group invites)
+export const acceptNotification = async (notificationId: string, userId: string) => {
+    try {
+        const response = await axios.post(`${NOTIFICATION_ROUTE}/accept`, {notificationId, userId});
+        return response.data;
+    } catch (error: any) {
+        console.error("Error accepting notification:", error);
+        throw new Error(error);
+    }
+}
+
+// Delete notification
+export const deleteNotification = async (notificationId: string) => {
+    try {
+        const response = await axios.delete(`${NOTIFICATION_ROUTE}/notifications/${notificationId}`);
+        return response.data;
+    } catch (error: any) {
+        console.error("Error deleting notification:", error);
+        throw new Error(error);
+    }
+}
+
+export const sendNotification = async (userId: string, groupId: string) => {
+    try {
+        const response = await axios.post(`${NOTIFICATION_ROUTE}/send`, {userId, groupId});
+        return response.data;
+    } catch (error: any) {
+        console.error("Error sending notification:", error);
+        throw new Error(error);
+    }
+}
