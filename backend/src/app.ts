@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import logger from './utils/logger';
 import userRoutes from './routes/userRoutes'
+import groupRoutes from './routes/groupRoutes'
 const app = express();
 
 // Middleware
@@ -33,6 +34,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 
 app.use("/api/users", userRoutes);
-
+app.use("/api/groups", groupRoutes)
 
 export default app;

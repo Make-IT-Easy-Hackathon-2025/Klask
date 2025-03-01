@@ -3,30 +3,28 @@ import Group from '../models/groupModel';
 import mongoose from 'mongoose';
 import User from '../models/userModel';
 
-/**
- * @route POST /api/groups
- * @desc Create a new group and add the creator as admin
- * @access Private
- */
+
 export const createGroup = async (req: Request, res: Response) => {
   try {
     const { name, description, coin, profilePic, userId } = req.body;
 
     // Validation
     if (!name || !coin || !coin.name || !coin.image || !userId) {
-      return res.status(400).json({
+       res.status(400).json({
         success: false,
         message: 'Please provide name, coin details (name and image), and userId'
       });
+      return;
     }
 
     // Check if user exists
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({
+       res.status(404).json({
         success: false,
         message: 'User not found'
       });
+      return;
     }
 
     // Create new group
@@ -105,12 +103,18 @@ export const getCreatedGroups = async (req: Request, res: Response): Promise<voi
       model: 'Group',
     });
 
+    
+
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
     }
 
-    const AdminGroups = user.groups.filter(group => group.role == 'admin');
+    const AdminGroups = user.groups
+    .filter(group => group.role === 'admin' && group.GID)
+    .map(group => group.GID);
+
+
 
     res.status(200).json({ groups: AdminGroups });
   } catch (error: any) {

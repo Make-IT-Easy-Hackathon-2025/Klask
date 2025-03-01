@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 const BASE_URL = "http://localhost:";
 export const PORT = 8080;
 export const BASE_ROUTE = `${BASE_URL}${PORT}`;
@@ -24,9 +23,12 @@ export const getUserGroups = async (userId: string) => {
     } catch (error: any) {
         console.error("Error getting user groups:", error);
 
+    }
+}
 export const getUserByEmail = async (email: string) => {
     try {
         const response = await axios.get(`${USER_ROUTE}/email/${email}`);
+        console.log(response);
         return response.data.user;
     } catch (error: any) {
         console.error("Error getting user by email:", error);
@@ -41,6 +43,8 @@ export const getCreatedGroups = async (userId: string) => {
     } catch (error: any) {
         console.error("Error getting created groups:", error);
 
+    }
+}
 export const getUserById = async (id : string) => {
     try {
         const response = await axios.get(`${USER_ROUTE}/${id}`);
@@ -50,3 +54,15 @@ export const getUserById = async (id : string) => {
         throw new Error(error);
     }
 }
+
+export const createGroup = async (name: string, description: string, coin: {name: string, image: string}, profilePic: string, userId: string) => {
+    try {
+        const response = await axios.post(`${GROUP_ROUTE}/create`, {name, description, coin, profilePic, userId});
+        return response.data.data;
+    } catch (error: any) {
+        console.error("Error creating group:", error);
+        throw new Error(error);
+    }
+}
+    
+    

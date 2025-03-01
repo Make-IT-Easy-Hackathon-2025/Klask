@@ -1,20 +1,15 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { TextField, Button, Typography, Container, Box, Paper } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom'; // To navigate after successful registration
-import { ThemeContext } from '../../ThemeContext';
-import { registerUser } from '../../api';
 import ErrorMessage from "../../components/ErrorMessage";
 import { useAuth } from '../../context/AuthProvider';
 
 const RegisterPage: React.FC = () => {
-  const { toggleTheme } = useContext(ThemeContext); // Getting toggleTheme from ThemeContext
-  const { register } = useAuth(); // Access the register method from AuthProvider
+  const { register } = useAuth(); 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
- 
-        
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -25,12 +20,10 @@ const RegisterPage: React.FC = () => {
       return;
     }
     try {
-      await registerUser(email, name);
-      await register(email, password);
-      navigate('/'); // Redirect to home or dashboard page after successful registration
+      await register(email, password, name);
+      navigate('/login'); 
     } catch (error: any) {
       setError("Error creating account" + error.message || error);
- 
     }
   };
 
