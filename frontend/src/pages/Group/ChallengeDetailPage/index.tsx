@@ -7,73 +7,18 @@ import {
   Divider,
   CircularProgress,
   useTheme,
-  Chip
+  Chip,
+  Avatar
 } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, EmojiEvents as TrophyIcon } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import NavBar from '../../../components/Navbar';
-
-interface Challenge {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  coinWorth: number;
-  dueDate?: string;
-  participants?: number;
-}
-
-const dummyChallenges: { [key: string]: Challenge } = {
-  '1': { 
-    id: '1', 
-    title: 'Daily Exercise', 
-    description: 'Complete a 30-minute workout session. Regular physical activity can help improve your health and reduce the risk of developing chronic diseases. This challenge encourages you to make exercise a daily habit. Track your progress and see how you improve over time.',
-    status: 'Active', 
-    coinWorth: 100,
-    dueDate: '2025-03-10',
-    participants: 12
-  },
-  '2': { 
-    id: '2', 
-    title: 'Read a Book Chapter', 
-    description: 'Read at least one chapter from an educational book. Reading regularly helps expand your knowledge base and improve comprehension skills. Choose a book that interests you or challenges your thinking.',
-    status: 'Completed', 
-    coinWorth: 200,
-    dueDate: '2025-03-08',
-    participants: 8
-  },
-  '3': { 
-    id: '3', 
-    title: 'Meditation Session', 
-    description: 'Complete a 15-minute guided meditation session. Meditation can help reduce stress and improve mental clarity. Find a quiet space where you can sit comfortably without distractions.',
-    status: 'Pending', 
-    coinWorth: 150,
-    dueDate: '2025-03-15',
-    participants: 5
-  },
-  '4': { 
-    id: '4', 
-    title: 'Learn a New Skill', 
-    description: 'Spend 1 hour learning something new related to your field. Continuous learning is essential for personal and professional growth. Choose a skill that will benefit your career or personal interests.',
-    status: 'Active', 
-    coinWorth: 250,
-    dueDate: '2025-03-20',
-    participants: 7
-  },
-  '5': { 
-    id: '5', 
-    title: 'Networking Event', 
-    description: 'Attend a virtual or in-person networking event. Building and maintaining professional relationships can open up new opportunities. Prepare a brief introduction and set a goal for how many new connections you want to make.',
-    status: 'Pending', 
-    coinWorth: 300,
-    dueDate: '2025-03-25',
-    participants: 15
-  },
-};
+import { getChallengeById } from '../../../api';
+import { IChallenge } from '../../../utils/types/dataTypes';
 
 const ChallengeDetailPage: React.FC = () => {
-  const { id: groupId, challengeId } = useParams<{ id: string, challengeId: string }>();
-  const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const { id: groupId, challengeId } = useParams<{ id: string; challengeId: string }>();
+  const [challenge, setChallenge] = useState<IChallenge | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const theme = useTheme();
@@ -81,21 +26,25 @@ const ChallengeDetailPage: React.FC = () => {
 
   useEffect(() => {
     const fetchChallenge = async () => {
+      if (!challengeId) {
+        setError("No challenge ID provided");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        // Simulate API call with dummy data
-        setTimeout(() => {
-          if (challengeId && dummyChallenges[challengeId]) {
-            setChallenge(dummyChallenges[challengeId]);
-            setError(null);
-          } else {
-            setError("Challenge not found");
-          }
-          setLoading(false);
-        }, 500);
+        const response = await getChallengeById(challengeId);
+        if (response.success) {
+          setChallenge(response.data);
+          setError(null);
+        } else {
+          setError("Failed to load challenge");
+        }
       } catch (err) {
         console.error("Error fetching challenge:", err);
         setError("Failed to load challenge details");
+      } finally {
         setLoading(false);
       }
     };
@@ -105,32 +54,6 @@ const ChallengeDetailPage: React.FC = () => {
 
   const handleGoBack = () => {
     navigate(`/groups/${groupId}/challenges`);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch(status.toLowerCase()) {
-      case 'active':
-        return theme.palette.success.main;
-      case 'completed':
-        return theme.palette.info.main;
-      case 'pending':
-        return theme.palette.warning.main;
-      default:
-        return theme.palette.text.secondary;
-    }
-  };
-
-  const getStatusBackground = (status: string) => {
-    switch(status.toLowerCase()) {
-      case 'active':
-        return `${theme.palette.success.main}22`; // 22 for opacity
-      case 'completed':
-        return `${theme.palette.info.main}22`;
-      case 'pending':
-        return `${theme.palette.warning.main}22`;
-      default:
-        return `${theme.palette.text.secondary}22`;
-    }
   };
 
   return (
@@ -170,26 +93,27 @@ const ChallengeDetailPage: React.FC = () => {
                   {challenge.title}
                 </Typography>
                 <Chip 
-                  label={challenge.status} 
+                  label={`Code: ${challenge.code}`}
                   sx={{ 
-                    color: getStatusColor(challenge.status),
-                    bgcolor: getStatusBackground(challenge.status),
+                    bgcolor: theme.palette.primary.main,
+                    color: 'white',
                     fontWeight: 'bold'
                   }} 
                 />
               </Box>
 
-              {challenge.dueDate && (
-                <Typography variant="subtitle1" sx={{ mb: 1, color: theme.palette.text.secondary }}>
-                  Due: {new Date(challenge.dueDate).toLocaleDateString()}
+              <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="subtitle2" sx={{ color: theme.palette.text.secondary }}>
+                  Created by:
                 </Typography>
-              )}
+                
+              </Box>
 
-              {challenge.participants && (
-                <Typography variant="subtitle2" sx={{ mb: 3, color: theme.palette.text.secondary }}>
-                  {challenge.participants} participants
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle2" sx={{ color: theme.palette.text.secondary }}>
+                  Participants: {challenge.users.length}
                 </Typography>
-              )}
+              </Box>
 
               <Divider sx={{ my: 2 }} />
 
@@ -203,18 +127,16 @@ const ChallengeDetailPage: React.FC = () => {
 
               <Divider sx={{ my: 2 }} />
 
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between',
-                  mt: 3
-                }}
-              >
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                mt: 3 
+              }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <TrophyIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
                   <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
-                    {challenge.coinWorth} coins
+                    {challenge.coinsValue} coins
                   </Typography>
                 </Box>
 

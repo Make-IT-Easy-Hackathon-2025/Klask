@@ -5,11 +5,7 @@ interface IChallengeStatus {
   status: string; // e.g., "pending", "completed"
 }
 
-interface ICreatedChallenge {
-  challengeID: mongoose.Schema.Types.ObjectId;
-  users: mongoose.Schema.Types.ObjectId[];
-  challengeCode: string;
-}
+
 
 interface IUserGroup {
   GID: mongoose.Schema.Types.ObjectId;
@@ -17,7 +13,7 @@ interface IUserGroup {
   totalCoins: number;
   myChallenges: IChallengeStatus[];
   role: string; // e.g., "admin", "member"
-  createdChallenges: ICreatedChallenge[];
+  createdChallenges: mongoose.Schema.Types.ObjectId[];
 }
 
 export interface IUser extends Document {
@@ -47,13 +43,7 @@ const UserSchema = new Schema<IUser>({
         },
       ],
       role: { type: String, required: true, enum: ["admin", "moderator", "user", "guest"] },
-      createdChallenges: [
-        {
-          challengeID: { type: Schema.Types.ObjectId, ref: "Challenge" },
-          users: [{ type: Schema.Types.ObjectId, ref: "User" }],
-          challengeCode: { type: String, required: true },
-        },
-      ],
+      createdChallenges: [{type: Schema.Types.ObjectId, ref: "Challenge" }],
     },
   ],
   notifications: [{ type: Schema.Types.ObjectId, ref: "Notification" }]
