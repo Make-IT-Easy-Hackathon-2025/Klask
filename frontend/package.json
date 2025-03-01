@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@firebase/auth": "^1.9.1",
     "@mui/icons-material": "^6.4.6",
     "@mui/material": "^6.4.6",
     "@testing-library/dom": "^10.4.0",
@@ -15,6 +16,9 @@
     "@types/node": "^16.18.126",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "axios": "^1.8.1",
+    "@types/react-router-dom": "^5.3.3",
+
     "firebase": "^11.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
