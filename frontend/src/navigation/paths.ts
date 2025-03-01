@@ -4,8 +4,10 @@ export enum PATHS {
     LOGIN_PAGE = "/login",
     HOME_PAGE = "/home",
     REGISTER_PAGE = "/register",
-    GROUP_PAGE_LEADERBOARD = "/group/leaderboard",
-    GROUPS = "/groups",
     INBOX = "/inbox",
-    PROFILE = "/profile"
+    PROFILE = "/profile",
+    GROUP_SHOP = "/groups/:id/shop",
+    GROUP_CHALLENGES = "/groups/:id/challenges",
+    GROUP_LEADERBOARD = "/groups/:id/leaderboard",
+    GROUP_MANAGE= "/groups/:id/manage"
 }

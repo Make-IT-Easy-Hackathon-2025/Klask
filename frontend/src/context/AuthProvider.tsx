@@ -1,19 +1,20 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
-  User,
 } from "firebase/auth";
 import { auth } from "../firebase";
+import { IUser } from "../utils/types/dataTypes";
+import { getUserByEmail, registerUser } from "../api";
 
 interface AuthContextType {
-  user: User | null;
+  user: IUser | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,14 +24,22 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<IUser | null>(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Register function
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string, name: string) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      setLoading(true);
+      const registerResponse = await createUserWithEmailAndPassword(auth, email, password);
+      if(registerResponse){
+        await registerUser(email, name);
+      }
     } catch (error) {
+      setLoading(false);
       console.error("Error during registration", error);
       throw error;
     }
@@ -39,8 +48,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Login function
   const login = async (email: string, password: string) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      setLoading(true);
+      const loginResponse = await signInWithEmailAndPassword(auth, email, password);
+      if(loginResponse.user){
+        const response = await getUserByEmail(email);
+        console.log(response)
+        if(response){
+          const newUser: IUser = { 
+              _id: response._id,
+              name: response.name,
+              email: email,
+              desc: response.desc,
+              profilePicture: response.profilePicture,
+              groups: response.groups,
+          }
+          setUser(newUser);
+          localStorage.setItem("user", JSON.stringify(newUser));
+          setIsAuthenticated(true);
+          setLoading(false);
+
+        }
+      }
     } catch (error) {
+      setIsAuthenticated(false);
+      setLoading(false);
       console.error("Error during login", error);
       throw error;
     }
@@ -49,6 +80,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Logout function
   const logout = async () => {
     try {
+      setUser(null);
+      localStorage.removeItem("user");
+      setIsAuthenticated(false);
       await signOut(auth);
     } catch (error) {
       console.error("Error during logout", error);
@@ -56,18 +90,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Listen for auth state changes
-  React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe(); // Clean up the subscription
-  }, []);
-
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

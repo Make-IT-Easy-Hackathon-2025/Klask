@@ -1,45 +1,58 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Avatar, Divider, Button, Card, CardContent, Fab, Dialog, DialogTitle, TextField, Box as MuiBox } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import NavBar from "../../components/Navbar";
-
-// Interface for Group (excluding users and shopItems)
-export interface IGroup {
-  _id: string; // MongoDB ObjectId as string
-  name: string;
-  profilePic: string; // URL to the profile picture
-  description: string;
-  coin: {
-    name: string;
-    image: string;
-  };
-}
-
-// Sample data for user's profile
-const userProfile = {
-  name: "John Doe",
-  email: "johndoe@example.com",
-  avatarUrl: "https://i.pravatar.cc/300", // You can replace this with a real image URL or placeholder
-  bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum.",
-};
+import { IGroup } from "../../utils/types/dataTypes";
+import { useAuth } from "../../context/AuthProvider";
+import { createGroup, getCreatedGroups, getUserGroups } from "../../api";
+import LoadingPage from "../LoadingPage";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage: React.FC = () => {
+  const { user } = useAuth();
+  console.log(user);
   const [groups, setGroups] = useState<IGroup[]>([
     {
-      _id: "1",
-      name: "Study Group",
-      profilePic: "https://via.placeholder.com/50",
-      description: "Group for discussing topics",
-      coin: { name: "GroupCoin", image: "https://via.placeholder.com/20" },
+        _id: "1",
+        name: "Study Group",
+        profilePic: "https://via.placeholder.com/50",
+        description: "Group for discussing topics",
+        coin: { name: "GroupCoin", image: "https://via.placeholder.com/20" },
+        users: [],
+        shopItems: []
     },
     {
-      _id: "2",
-      name: "Gaming Squad",
-      profilePic: "https://via.placeholder.com/50",
-      description: "Casual weekend gaming",
-      coin: { name: "GameCoin", image: "https://via.placeholder.com/20" },
+        _id: "2",
+        name: "Gaming Squad",
+        profilePic: "https://via.placeholder.com/50",
+        description: "Casual weekend gaming",
+        coin: { name: "GameCoin", image: "https://via.placeholder.com/20" },
+        users: [],
+        shopItems: []
     },
   ]);
+
+  useEffect(() => {
+
+    const fetchGroups = async () => {
+      if(!user) {
+          return;
+      }
+      try{
+        setLoading(true);
+      const userGroups = await getCreatedGroups(user._id);
+      console.log(userGroups);
+      setGroups(userGroups);
+      } catch (error) {
+          console.error("Error fetching groups", error);
+      } finally{
+          setLoading(false);
+      }
+    } 
+    fetchGroups();
+    
+
+  }, [user]);
 
   const [open, setOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
@@ -47,23 +60,31 @@ const ProfilePage: React.FC = () => {
   const [newGroupCoin, setNewGroupCoin] = useState("");
   const [newGroupCoinImage, setNewGroupCoinImage] = useState<File | null>(null);
   const [newGroupProfilePic, setNewGroupProfilePic] = useState<File | null>(null);
-
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   // Function to handle adding a new group
-  const handleAddGroup = () => {
+  const handleAddGroup = async () => {
     if (newGroupName.trim() === "") return;
 
     const newGroup: IGroup = {
-      _id: (groups.length + 1).toString(), // Generate an ID (can replace with MongoDB ObjectId)
-      name: newGroupName,
-      profilePic: newGroupProfilePic ? URL.createObjectURL(newGroupProfilePic) : "https://via.placeholder.com/50", // Use uploaded profilePic or default
-      description: newGroupDescription,
-      coin: {
-        name: newGroupCoin,
-        image: newGroupCoinImage ? URL.createObjectURL(newGroupCoinImage) : "https://via.placeholder.com/20", // Use uploaded coin image or default
-      },
+        _id: (groups.length + 1).toString(), // Generate an ID (can replace with MongoDB ObjectId)
+        name: newGroupName,
+        profilePic: newGroupProfilePic ? URL.createObjectURL(newGroupProfilePic) : "https://via.placeholder.com/50", // Use uploaded profilePic or default
+        description: newGroupDescription,
+        coin: {
+            name: newGroupCoin,
+            image: newGroupCoinImage ? URL.createObjectURL(newGroupCoinImage) : "https://via.placeholder.com/20", // Use uploaded coin image or default
+        },
+        shopItems: [],
+        users: []
     };
+    if(!user) {
+        setError("User not found");
+        return;
+    }
+    await createGroup(newGroup.name, newGroup.description, newGroup.coin, newGroup.profilePic, user._id);
 
-    setGroups([...groups, newGroup]);
+    //setGroups([...groups, newGroup]);
     setNewGroupName("");
     setNewGroupDescription("");
     setNewGroupCoin("");
@@ -71,6 +92,17 @@ const ProfilePage: React.FC = () => {
     setNewGroupProfilePic(null);
     setOpen(false);
   };
+const navigate = useNavigate();
+const handleGroupClick = (groupId: string) => {
+  console.log("Group clicked:", groupId
+  );
+  navigate(`/groups/${groupId}/leaderboard`);
+}
+
+  if(loading){
+
+    return <LoadingPage />
+  }
 
   return (
     <NavBar>
@@ -85,21 +117,21 @@ const ProfilePage: React.FC = () => {
       >
         {/* Profile Header */}
         <Avatar
-          src={userProfile.avatarUrl}
-          alt={userProfile.name}
+          src={user?.profilePicture}
+          alt={user?.name}
           sx={{ width: 120, height: 120, marginBottom: 2 }}
         />
         <Typography variant="h4" fontWeight="bold" sx={{ marginBottom: 1 }}>
-          {userProfile.name}
+          {user?.name}
         </Typography>
         <Typography variant="body1" color="textSecondary" sx={{ marginBottom: 2 }}>
-          {userProfile.email}
+          {user?.email}
         </Typography>
 
         {/* Bio Section */}
         <Divider sx={{ width: "100%", marginBottom: 2 }} />
         <Typography variant="body2" sx={{ textAlign: "center", marginBottom: 3 }}>
-          {userProfile.bio}
+          {user?.desc}
         </Typography>
 
         {/* Buttons for user actions */}
@@ -115,7 +147,7 @@ const ProfilePage: React.FC = () => {
           My Groups
         </Typography>
         {groups.map((group) => (
-          <Card key={group._id} sx={{ mb: 2, width:'100%' }}>
+          <Card key={group._id} sx={{ mb: 2, width:'100%' }} onClick={() => handleGroupClick(group._id)}>
             <CardContent>
               <MuiBox sx={{ display: "flex", alignItems: "center" }}>
                 <Avatar src={group.profilePic} sx={{ mr: 2 }} />
@@ -125,8 +157,9 @@ const ProfilePage: React.FC = () => {
                 {group.description}
               </Typography>
               <MuiBox sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                <Avatar src={group.coin.image} sx={{ width: 20, height: 20, mr: 1 }} />
-                <Typography variant="body2">{group.coin.name}</Typography>
+{       group.coin.image !== undefined &&       
+  <Avatar src={group.coin.image} sx={{ width: 20, height: 20, mr: 1 }} />
+}                <Typography variant="body2">{group.coin.name}</Typography>
               </MuiBox>
             </CardContent>
           </Card>
