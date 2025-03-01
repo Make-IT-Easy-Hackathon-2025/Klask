@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Box, Typography, Avatar, Divider, Button, Fab, Dialog, DialogTitle, TextField, Box as MuiBox, Badge, useTheme } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import NavBar from "../../components/Navbar";
@@ -8,39 +8,24 @@ import { createGroup, getCreatedGroups, updateUser} from "../../api";
 import LoadingPage from "../LoadingPage";
 import { useNavigate } from "react-router-dom";
 import GroupCard from "../../components/GroupCard"
-import { IconButton } from "@mui/material";
+import { IconButton} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
+import { ThemeContext } from "../../ThemeContext";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import CustomAvatar from "../../components/CustomAvatar";
+
 
 const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
   const theme = useTheme();
-
+  const {toggleTheme} = useContext(ThemeContext);
+  const [groups, setGroups] = useState<IGroup[]>([]);
   const [editMode, setEditMode] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editedProfilePic, setEditedProfilePic] = useState<File | null>(null);
   const [previewProfilePic, setPreviewProfilePic] = useState<string | null>(null);
-
-  const [groups, setGroups] = useState<IGroup[]>([
-    {
-        _id: "1",
-        name: "Study Group",
-        profilePic: "https://via.placeholder.com/50",
-        description: "Group for discussing topics",
-        coin: { name: "GroupCoin", image: "https://via.placeholder.com/20" },
-        users: [],
-        shopItems: []
-    },
-    {
-        _id: "2",
-        name: "Gaming Squad",
-        profilePic: "https://via.placeholder.com/50",
-        description: "Casual weekend gaming",
-        coin: { name: "GameCoin", image: "https://via.placeholder.com/20" },
-        users: [],
-        shopItems: []
-    },
-  ]);
 
   useEffect(() => {
     if (user) {
@@ -215,17 +200,16 @@ if(loading) {
             />
           )}
           <label htmlFor={editMode ? "profile-pic-upload" : undefined}>
-            <Avatar
-              src={previewProfilePic || user?.profilePicture}
-              alt={user?.name}
-              sx={{ 
-                width: 120, 
-                height: 120, 
-                marginBottom: 2,
-                cursor: editMode ? 'pointer' : 'default' 
-              }}
-            />
-          </label>
+          <CustomAvatar
+            src={previewProfilePic || user?.profilePicture}
+            alt={user?.name}
+            size={120}
+            sx={{ 
+              marginBottom: 2,
+              cursor: editMode ? 'pointer' : 'default' 
+            }}
+          />
+        </label>
         </Badge>
         {editMode ? (
           <TextField
@@ -268,6 +252,18 @@ if(loading) {
         >
           Logout
         </Button>
+
+        <Button
+          onClick={toggleTheme}
+  
+        sx={{
+          position: "absolute",
+          top: 80,
+          right: 16,
+        }}
+      >
+        {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+      </Button>
 
         {/* My Groups Section */}
         <Typography variant="h5" gutterBottom sx={{ marginTop: 4 }}>

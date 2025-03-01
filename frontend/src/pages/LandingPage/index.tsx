@@ -7,8 +7,8 @@ import WorkIcon from "@mui/icons-material/Work";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
-import { ReactComponent as MotivoLogo } from "../../assets/motivo-logo.svg";
-
+import lightLogo from "../../assets/light.png";
+import darkLogo from "../../assets/dark.png";
 const LandingPage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -28,6 +28,8 @@ const LandingPage: React.FC = () => {
       text: "Redeem your coins for exciting prizes and perks.",
     },
   ];
+
+  const logo = theme.palette.mode === 'light' ? darkLogo : lightLogo; // Select logo based on theme
 
   return (
     <Container
@@ -54,25 +56,15 @@ const LandingPage: React.FC = () => {
             justifyContent: "center",
           }}
         >
-          <Typography 
-            variant="h2" 
-            component="h1" 
-            gutterBottom 
-            sx={{ 
-              fontWeight: "bold", 
-              color: theme.palette.text.primary,
-              fontSize: {xs: '2.5rem', sm: '3.5rem', md: '4.5rem'}
-            }}
-          >
-            Welcome, to Motivo!
-          </Typography>
+          <img src={logo} alt="Motivo Logo" style={{ width: '100vh', height: 'auto',marginBottom: '-50px' }} /> {/* Add the logo here */}
+      
           <Typography 
             variant="h5" 
             component="h2" 
             gutterBottom 
             sx={{ 
               color: theme.palette.text.secondary,
-              mb: 3,
+              mb: 2,
               fontStyle: "italic"
             }}
           >
