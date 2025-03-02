@@ -40,10 +40,10 @@ import {
   Person as UserIcon,
 } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import NavBar from "../../components/Navbar";
-import { getGroupUsers, getUserByEmail, getUserById, sendNotification } from "../../api";
-import LoadingPage from "../LoadingPage";
+import { getGroupUsers, getUserByEmail, sendNotification, updateRoles } from "../../api";
+import placeholderprofilePicture from '../../assets/placeholder_profile.png';
+import sapProfile from '../../assets/sap.png';
 interface GroupUser {
   _id: string;
   name: string;
@@ -126,11 +126,16 @@ const GroupManagePage: React.FC = () => {
   const handleRoleChange = async () => {
     try {
       // Replace with your actual API call
-      // await axios.put(`/api/groups/${groupId}/users/role`, {
-      //   userIds: selectedUsers,
-      //   role: roleToChange
-      // });
-      
+      if (groupId) {
+        await updateRoles(selectedUsers, groupId, roleToChange);
+      } else {
+        setSnackbar({
+          open: true,
+          message: "Group ID is not defined",
+          severity: "error",
+        });
+      }
+    
       // For now just update the state
       const updatedUsers = users.map((user) => {
         if (selectedUsers.includes(user._id)) {
@@ -160,10 +165,7 @@ const GroupManagePage: React.FC = () => {
   // Handle adding a new user
   const handleAddUser = async () => {
     try {
-      // Replace with your actual API call
-      // await axios.post(`/api/groups/${groupId}/users`, { email: userEmail });
       
-      // For now just update the state with a dummy user
       const user = await getUserByEmail(userEmail);
       if(!groupId){
         setError("No group ID provided");
@@ -171,6 +173,12 @@ const GroupManagePage: React.FC = () => {
         return;
       }
       const response = await sendNotification(user._id, groupId);
+      console.log(response);
+      if(response.message === "User is already a member of this group"){
+        //already in group
+        setSnackbar({ open: true, message: "User already in group", severity: "error" });
+        return;
+      }
       setUserEmail("");
       setAddUserOpen(false);
       setSnackbar({
@@ -341,7 +349,7 @@ const GroupManagePage: React.FC = () => {
                   )}
                   
                   <ListItemAvatar>
-                    <Avatar alt={user.name} src={user.profilePicture} />
+                    <Avatar alt={user.name} src={user.profilePicture ||  user.role === 'admin'? sapProfile :placeholderprofilePicture} />
                   </ListItemAvatar>
                   
                   <ListItemText

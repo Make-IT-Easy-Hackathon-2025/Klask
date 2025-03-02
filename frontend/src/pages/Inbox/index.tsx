@@ -100,8 +100,13 @@ const InboxPage: React.FC = () => {
   // Handle decline invitation
   const handleDeclineInvitation = async (notificationId: string) => {
     try {
+    
       setLoading(true);
-      await deleteNotification(notificationId);
+      if(!user?._id) {
+        setError("User not found");
+        return;
+      }
+      await deleteNotification(notificationId, user._id);
       
       // Remove the notification from the list
       setNotifications(prevNotifications => 
@@ -152,9 +157,7 @@ const InboxPage: React.FC = () => {
         </Typography>
 
         {notifications.length === 0 ? (
-          <Paper sx={{ p: 4, width: "100%", textAlign: "center" }}>
-            <Typography variant="body1">No notifications yet</Typography>
-          </Paper>
+            <Typography variant="body1" sx={{ fontStyle: 'italic' }}>No notifications yet</Typography>
         ) : (
           <List sx={{ width: "100%" }}>
             {notifications.map((notification) => (

@@ -4,6 +4,7 @@ import { ROUTES } from "./navigation/routes";
 import NotFoundPage from "./pages/NotFoundPage";
 import Layout from "./components/Layout";
 import { AuthProvider } from "./context/AuthProvider";
+import "./App.css";
 
 const App: React.FC = () => {
   const router = createBrowserRouter([

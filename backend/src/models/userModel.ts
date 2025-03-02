@@ -5,8 +5,6 @@ interface IChallengeStatus {
   status: string; // e.g., "pending", "completed"
 }
 
-
-
 interface IUserGroup {
   GID: mongoose.Schema.Types.ObjectId;
   coins: number;
@@ -23,7 +21,7 @@ export interface IUser extends Document {
   profilePicture: string;
   groups: IUserGroup[];
   notifications: mongoose.Schema.Types.ObjectId[]; // Array of notification IDs
-
+  purchasedItems: { itemID: mongoose.Schema.Types.ObjectId, quantity: number }[];
 }
 
 const UserSchema = new Schema<IUser>({
@@ -39,14 +37,20 @@ const UserSchema = new Schema<IUser>({
       myChallenges: [
         {
           challengeID: { type: Schema.Types.ObjectId, ref: "Challenge" },
-          status: { type: String, required: true },
+          status: { type: String, required: true, enum: ["pending", "completed", "active"]},
         },
       ],
       role: { type: String, required: true, enum: ["admin", "moderator", "user", "guest"] },
       createdChallenges: [{type: Schema.Types.ObjectId, ref: "Challenge" }],
     },
   ],
-  notifications: [{ type: Schema.Types.ObjectId, ref: "Notification" }]
+  notifications: [{ type: Schema.Types.ObjectId, ref: "Notification" }],
+  purchasedItems: [
+    {
+      itemID: { type: Schema.Types.ObjectId, ref: "ShopItem" },
+      quantity: {type: Number, default: 1}
+    }
+  ]
 });
 
 

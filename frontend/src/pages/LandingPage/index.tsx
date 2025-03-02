@@ -1,19 +1,19 @@
 import React, { useEffect } from "react";
-import { Button, Container, Typography, useTheme, Box, AppBar, Toolbar, IconButton } from "@mui/material";
+import { Button, Container, Typography, useTheme, Box, AppBar, Toolbar, IconButton, Fade, Zoom } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { ThemeContext } from "../../ThemeContext"; // Import your ThemeContext
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents"; // Icon for rewards/achievements
-import WorkIcon from "@mui/icons-material/Work"; // Icon for tasks/work
-import CardGiftcardIcon from "@mui/icons-material/CardGiftcard"; // Icon for rewards/gifts
-import Brightness4Icon from "@mui/icons-material/Brightness4"; // Icon for dark mode
-import Brightness7Icon from "@mui/icons-material/Brightness7"; // Icon for light mode
-
+import { ThemeContext } from "../../ThemeContext";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import WorkIcon from "@mui/icons-material/Work";
+import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import lightLogo from "../../assets/light.png";
+import darkLogo from "../../assets/dark.png";
 const LandingPage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { toggleTheme } = React.useContext(ThemeContext); // Use the ThemeContext to toggle themes
+  const { toggleTheme } = React.useContext(ThemeContext);
 
-  // Data for alternating icon-text sections
   const sections = [
     {
       icon: <EmojiEventsIcon sx={{ fontSize: 60, color: theme.palette.primary.main }} />,
@@ -21,7 +21,7 @@ const LandingPage: React.FC = () => {
     },
     {
       icon: <WorkIcon sx={{ fontSize: 60, color: theme.palette.primary.main }} />,
-      text: "Stay productive and achieve your goals with Motivo.",
+      text: "Stay productive and achieve your goals with us!",
     },
     {
       icon: <CardGiftcardIcon sx={{ fontSize: 60, color: theme.palette.primary.main }} />,
@@ -29,85 +29,127 @@ const LandingPage: React.FC = () => {
     },
   ];
 
-  return (
-    <>
-      {/* AppBar */}
-      <AppBar position="static" sx={{ boxShadow: "none", mb: 2, bgcolor: theme.palette.secondary.main }}>
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: theme.palette.text.primary }}>
-            Motivo
-          </Typography>
-          {/* Theme Toggle Button */}
-          <IconButton onClick={toggleTheme} color="inherit">
-            {theme.palette.mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+  const logo = theme.palette.mode === 'light' ? darkLogo : lightLogo; // Select logo based on theme
 
-      {/* Main Content */}
-      <Container
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          minHeight: "90vh", // Slightly less than full viewport height
-          padding: "10px", // Minimal padding
-          bgcolor: theme.palette.background.default, // Dynamic background color
-        }}
-      >
-        {/* Header Section (Top) */}
+  return (
+    <Container
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh", // Full viewport height to prevent scrolling
+        padding: "20px",
+        bgcolor: theme.palette.background.default,
+        overflow: "hidden", // Prevent scrolling
+      }}
+    >
+      {/* Centered Title Section */}
+      <Fade in={true} timeout={1000}>
         <Box
           sx={{
             textAlign: "center",
-            marginBottom: "40px", // Spacing between header and prompts
+            mb: 5,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: "bold", color: theme.palette.text.primary }}>
-            Welcome to Motivo
-          </Typography>
-          <Typography variant="h6" component="h2" gutterBottom sx={{ color: theme.palette.text.secondary }}>
-            Motivate, Achieve, Reward
+          <img src={logo} alt="Motivo Logo" style={{ width: '100vh', height: 'auto',marginBottom: '-50px' }} /> {/* Add the logo here */}
+      
+          <Typography 
+            variant="h5" 
+            component="h2" 
+            gutterBottom 
+            sx={{ 
+              color: theme.palette.text.secondary,
+              mb: 2,
+              fontStyle: "italic"
+            }}
+          >
+            "{sections[1].text}"
           </Typography>
           <Button
             variant="contained"
             color="primary"
             size="large"
             onClick={() => navigate("/login")}
-            sx={{ marginTop: "10px", bgcolor: theme.palette.primary.main, color: theme.palette.text.primary }}
+            sx={{ 
+              mt: 2, 
+              bgcolor: theme.palette.primary.main, 
+              color: theme.palette.text.primary,
+              px: 4, 
+              py: 1.5, 
+              fontSize: '1.2rem',
+              '&:hover': {
+                bgcolor: theme.palette.primary.dark,
+                transform: 'translateY(-3px)',
+              },
+              animation: 'pulse 2.5s infinite',
+              '@keyframes pulse': {
+                '0%': {
+                  boxShadow: `0 0 0 0 ${theme.palette.primary.main}99`,
+                  transform: 'scale(1)',
+                },
+                '70%': {
+                  boxShadow: `0 0 0 10px ${theme.palette.primary.main}00`,
+                  transform: 'scale(1.05)',
+                },
+                '100%': {
+                  boxShadow: `0 0 0 0 ${theme.palette.primary.main}00`,
+                  transform: 'scale(1)',
+                },
+              },
+            }}
           >
             Get Started
           </Button>
         </Box>
+      </Fade>
 
-        {/* Icon-Text Sections (Alternating Layout) */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "40px", // Increased spacing between prompts
-            width: "100%",
-            maxWidth: "800px", // Limit width for better readability
-          }}
-        >
-          {sections.map((section, index) => (
+      {/* Animated Sections */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          width: "100%",
+          maxWidth: "800px",
+        }}
+      >
+        {sections.map((section, index) => (
+          <Zoom 
+            in={true} 
+            style={{ transitionDelay: `${index * 300}ms` }}
+            key={index}
+          >
             <Box
-              key={index}
               sx={{
                 display: "flex",
                 flexDirection: index % 2 === 0 ? "row" : "row-reverse",
                 alignItems: "center",
-                gap: "20px", // Spacing between icon and text
+                gap: "20px",
+                p: 1,
+                borderRadius: "10px",
               }}
             >
               <Box sx={{ flexShrink: 0 }}>{section.icon}</Box>
-              <Typography variant="body1" sx={{ fontSize: "18px", color: theme.palette.text.primary }}>
+              <Typography variant="body1" sx={{ fontSize: "18px", color: theme.palette.text.primary, fontWeight:'bold' }}>
                 {section.text}
               </Typography>
             </Box>
-          ))}
-        </Box>
-      </Container>
-    </>
+          </Zoom>
+        ))}
+      </Box>
+      
+      {/* Theme Toggle Button (optional) */}
+      <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+        <IconButton onClick={toggleTheme} color="inherit">
+          {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+        </IconButton>
+      </Box>
+    </Container>
   );
 };
 

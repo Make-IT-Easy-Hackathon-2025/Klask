@@ -43,4 +43,5 @@ app.use("/api/shop", shopRoutes);
 
 app.use("/api/groups", groupRoutes)
 app.use("/api/notifications", notificationRoutes)
+app.use("/api/shop", shopRoutes);
 export default app;

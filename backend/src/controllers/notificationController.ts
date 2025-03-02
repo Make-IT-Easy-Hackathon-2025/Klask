@@ -3,12 +3,9 @@ import Notification from "../models/notificationModel";
 import User from "../models/userModel";
 import Group from "../models/groupModel";
 import mongoose from "mongoose";
+import Notifications from "../models/notificationModel";
 
-/**
- * Send a group invitation notification to a user
- * @route POST /api/notifications/invite
- * @access Private
- */
+
 export const sendGroupInvitation = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId, groupId } = req.body;
@@ -41,14 +38,21 @@ export const sendGroupInvitation = async (req: Request, res: Response): Promise<
       });
       return;
     }
+    //check if user is already in the group
+    const isUserInGroup = user.groups.some(g => g.GID.toString() === groupId);
+    if (isUserInGroup) {
+      res.status(202).json({
+        success: false,
+        message: "User is already a member of this group"
+      });
+      return;
+    }
 
     // Create a new notification
-    const notification = new Notification({
+    const notification = new Notifications({
       message: `You've been invited to join the group "${group.name}"`,
       isInvite: true,
-      groupID: groupId,
-      // groupId: group._id,
-      // invitedBy: req.body.invitedBy, // If you want to track who sent the invite
+      groupID: groupId
     });
 
     // Save the notification
@@ -170,7 +174,6 @@ export const acceptGroupInvitation = async (req: Request, res: Response): Promis
       }
   
       const groupId = notification.groupID;
-  
       // Check if the group exists
       const group = await Group.findById(groupId);
       if (!group) {
@@ -246,3 +249,63 @@ export const acceptGroupInvitation = async (req: Request, res: Response): Promis
       });
     }
   };
+
+  export const deleteInvitation = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId, notificationId } = req.body;
+  
+      // Validate input
+      if (!userId || !notificationId) {
+        res.status(400).json({
+          success: false,
+          message: "Please provide both userId and notificationId"
+        });
+        return;
+      }
+  
+      // Check if user exists
+      const user = await User.findById(userId);
+      if (!user) {
+        res.status(404).json({
+          success: false,
+          message: "User not found"
+        });
+        return;
+      }
+  
+      // Check if notification exists and belongs to user
+      const notificationExists = user.notifications.some(
+        notif => notif.toString() === notificationId
+      );
+      
+      if (!notificationExists) {
+        res.status(404).json({
+          success: false,
+          message: "Notification not found or doesn't belong to this user"
+        });
+        return;
+      }
+        
+  
+      // Remove the notification from user's notifications array
+      await User.findByIdAndUpdate(userId, {
+        $pull: { notifications: notificationId }
+      });
+  
+      // Delete the notification (optional - you could keep it with a 'status' field)
+      await Notification.findByIdAndDelete(notificationId);
+  
+      res.status(200).json({
+        success: true,
+        message: `Invitation notification deleted successfully`
+      });
+  
+    } catch (error: any) {
+      console.error("Error deleting invitation notification:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error deleting invitation notification",
+        error: error.message
+      });
+    }
+  }

@@ -93,9 +93,9 @@ export const getGroupUsers = async (id: string) => {
     
 
 // Shop Endoints
-export const getShopItemsByGroupId = async (groupId: string) => {
+export const getAllShopItemsByGroupId = async (groupId: string) => {
     try {
-        const response = await axios.get(`${SHOP_ROUTE}/group/${groupId}`);
+        const response = await axios.get(`${SHOP_ROUTE}/items/${groupId}`);
         return response.data.items;
     } catch (error: any) {
         console.error("Error getting shop items:", error);
@@ -117,12 +117,13 @@ export const createShopItem = async (shopItemData: {
     name: string;
     description?: string;
     price: number;
-    imageUrl?: string;
+    image?: string;
     groupId: string;
-    quantity?: number;
+    availability: string;
+    quantity: number;
 }) => {
     try {
-        const response = await axios.post(`${SHOP_ROUTE}`, shopItemData);
+        const response = await axios.post(`${SHOP_ROUTE}/add-item`, shopItemData);
         return response.data.item;
     } catch (error: any) {
         console.error("Error creating shop item:", error);
@@ -165,7 +166,7 @@ export const getCreatedChallenges= async (userId: string,groupId: string) => {
 
 export const getChallengeById = async (challengeId: string) => {
     try {
-        const response = await axios.get(`${CHALLENGE_ROUTE}/detail/${challengeId}`);
+        const response = await axios.get(`${CHALLENGE_ROUTE}/${challengeId}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching challenge:", error);
@@ -196,9 +197,9 @@ export const acceptNotification = async (notificationId: string, userId: string)
 }
 
 // Delete notification
-export const deleteNotification = async (notificationId: string) => {
+export const deleteNotification = async (notificationId: string, userId: string) => {
     try {
-        const response = await axios.delete(`${NOTIFICATION_ROUTE}/notifications/${notificationId}`);
+        const response = await axios.post(`${NOTIFICATION_ROUTE}/del`,  {notificationId, userId});
         return response.data;
     } catch (error: any) {
         console.error("Error deleting notification:", error);
@@ -216,3 +217,116 @@ export const sendNotification = async (userId: string, groupId: string) => {
     }
 }
 
+export const updateShopItem = async (shopItemData: {
+    name: string;
+    description?: string;
+    price: number;
+    imageUrl?: string;
+    groupId: string;
+    quantity?: number;
+    availability: string;
+}) => {
+    try {
+        const response = await axios.post(`${SHOP_ROUTE}/update`, shopItemData);
+        return response.data.item;
+    } catch (error: any) {
+        console.error("Error updating shop item:", error);
+        throw new Error(error);
+    }
+};
+
+export const purchaseShopItem = async (userId: string, groupId: string, itemId: string, quantity: number) => {
+    try {
+        const response = await axios.post(`${SHOP_ROUTE}/purchase`, {
+            userId,
+            groupId,
+            itemId,
+            quantity
+        });
+        return response.data;
+    } catch (error: any) {
+        console.error("Error purchasing item:", error);
+        throw error;
+    }
+};
+
+export const joinChallenge = async (userId: string, challengeCode: string, groupId: string) => {
+    try {
+        const response = await axios.post(`${CHALLENGE_ROUTE}/join`, {userId, challengeCode, groupId});
+        return response.data;
+    } catch (error: any) {
+        console.error("Error joining challenge:", error);
+        throw new Error(error);
+    }
+    
+}
+export const getJoinedChallenges = async (userId: string, groupId: string) => {
+    try {
+        const response = await axios.get(`${CHALLENGE_ROUTE}/getJoined/${userId}/${groupId}`);
+        return response.data.data;
+    } catch (error) {
+        console.error("Error fetching challenge:", error);
+        throw error;
+    }
+}
+
+export const approveChallenge = async (challengeId: string, userId: string, groupId: string) => {
+    try {
+        const response = await axios.post(`${CHALLENGE_ROUTE}/approve`, {challengeId, userId, groupId});
+        return response.data;
+    } catch (error: any) {
+        console.error("Error approving challenge:", error);
+        throw new Error(error);
+    }
+};
+export const updateUser = async (id: string, name: string, profilePicture: string) => {
+    try {
+        const response = await axios.put(`${USER_ROUTE}/${id}`, {name, profilePicture});
+        return response.data;
+    } catch (error: any) {
+        console.error("Error updating user:", error);
+        throw new Error(error);
+    }
+}
+
+export const updateRoles = async ( userIds: string[], groupId: string, newRole: string) => {
+    try {
+        const response = await axios.post(`${USER_ROUTE}/update-role`, { userIds, groupId, newRole});
+        return response.data;
+    } catch (error: any) {
+        console.error("Error updating role:", error);
+        throw new Error(error);
+    }
+}
+
+
+export const getPurchasedItems = async (userId: string) => {
+    try {
+        const response = await axios.get(`${USER_ROUTE}/${userId}/purchasedItems`);
+        return response.data.purchasedItems;
+    } catch (error: any) {
+        console.error("Error getting purchased items:", error);
+        throw new Error(error);
+    }
+};
+
+
+export const getUserDetailsWithChallenges = async (userId: string, groupId: string) => {
+    try {
+      const response = await axios.get(`${USER_ROUTE}/${userId}/details/${groupId}`);
+      return response.data.data;
+    } catch (error: any) {
+      console.error("Error getting user details:", error);
+      throw error;
+    }
+  };
+
+export const updateQuantity = async (id: string, quantity: number) => {
+    try {
+        const response = await axios.post(`${SHOP_ROUTE}/updateQuantity`, {id, quantity});
+        return response.data.item;
+    } catch (error: any) {
+        console.error("Error updating quantity:", error);
+        throw new Error(error);
+    }
+}
