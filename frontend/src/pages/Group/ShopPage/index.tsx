@@ -11,6 +11,7 @@ import {
   Zoom,
   Grow,
   Paper,
+  Theme,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../../components/Navbar";
@@ -25,6 +26,8 @@ import {
   createShopItem,
   getAllShopItemsByGroupId,
 } from "../../../api";
+import { BoxTypeMap } from "@mui/system";
+import { OverridableComponent } from "@mui/types";
 
 const ShopPage: React.FC = () => {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
@@ -112,6 +115,7 @@ const ShopPage: React.FC = () => {
 
   return (
     <NavBar isGroupPage={true} activeTab="shop">
+
       <Box
         sx={{
           p: 3,
@@ -122,6 +126,7 @@ const ShopPage: React.FC = () => {
           position: "relative",
         }}
       >
+
         <Typography
           variant="h4"
           component="h1"
@@ -327,5 +332,6 @@ const ShopPage: React.FC = () => {
     </NavBar>
   );
 };
+
 
 export default ShopPage;

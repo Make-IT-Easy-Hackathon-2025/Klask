@@ -40,9 +40,8 @@ import {
   Person as UserIcon,
 } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import NavBar from "../../components/Navbar";
-import { getGroupUsers, getUserByEmail, getUserById, sendNotification } from "../../api";
+import { getGroupUsers, getUserByEmail, sendNotification, updateRoles } from "../../api";
 interface GroupUser {
   _id: string;
   name: string;
@@ -125,11 +124,18 @@ const GroupManagePage: React.FC = () => {
   const handleRoleChange = async () => {
     try {
       // Replace with your actual API call
-      // await axios.put(`/api/groups/${groupId}/users/role`, {
-      //   userIds: selectedUsers,
-      //   role: roleToChange
-      // });
-      
+      if (groupId) {
+        console.log("Group ID:", groupId);
+        console.log("New role:", roleToChange);
+        await updateRoles(selectedUsers, groupId, roleToChange);
+      } else {
+        setSnackbar({
+          open: true,
+          message: "Group ID is not defined",
+          severity: "error",
+        });
+      }
+    
       // For now just update the state
       const updatedUsers = users.map((user) => {
         if (selectedUsers.includes(user._id)) {
