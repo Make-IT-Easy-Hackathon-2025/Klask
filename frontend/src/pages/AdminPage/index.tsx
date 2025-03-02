@@ -165,10 +165,7 @@ const GroupManagePage: React.FC = () => {
   // Handle adding a new user
   const handleAddUser = async () => {
     try {
-      // Replace with your actual API call
-      // await axios.post(`/api/groups/${groupId}/users`, { email: userEmail });
       
-      // For now just update the state with a dummy user
       const user = await getUserByEmail(userEmail);
       if(!groupId){
         setError("No group ID provided");
