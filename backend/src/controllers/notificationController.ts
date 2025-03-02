@@ -3,12 +3,9 @@ import Notification from "../models/notificationModel";
 import User from "../models/userModel";
 import Group from "../models/groupModel";
 import mongoose from "mongoose";
+import Notifications from "../models/notificationModel";
 
-/**
- * Send a group invitation notification to a user
- * @route POST /api/notifications/invite
- * @access Private
- */
+
 export const sendGroupInvitation = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId, groupId } = req.body;
@@ -52,11 +49,10 @@ export const sendGroupInvitation = async (req: Request, res: Response): Promise<
     }
 
     // Create a new notification
-    const notification = new Notification({
+    const notification = new Notifications({
       message: `You've been invited to join the group "${group.name}"`,
       isInvite: true,
-      groupId: groupId,
-      // invitedBy: req.body.invitedBy, // If you want to track who sent the invite
+      groupID: groupId
     });
 
     // Save the notification
