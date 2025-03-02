@@ -26,8 +26,10 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { useParams } from "react-router-dom";
 import { getGroupUsers, getUserDetailsWithChallenges } from "../../../api";
 import LoadingPage from "../../LoadingPage";
+
 import CustomCoin from "../../../components/CustomCoin";
 import placeholderProfilePicture from '../../../assets/placeholder_profile.png';
+
 
 interface Challenge {
   _id: string;

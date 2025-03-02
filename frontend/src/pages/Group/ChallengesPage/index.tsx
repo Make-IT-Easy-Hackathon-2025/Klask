@@ -374,6 +374,10 @@ const ChallengesPage: React.FC = () => {
                       sx={{
                         height: "100%",
                         display: "flex",
+                        maxWidth: "90%",
+                        maxHeight: "25vh",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                         flexDirection: "column",
                       }}
                     >
