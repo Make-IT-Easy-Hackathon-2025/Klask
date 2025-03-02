@@ -17,6 +17,7 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import CustomAvatar from "../../components/CustomAvatar";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import placeholderimage from '../../assets/sap.png';
 
 
 interface PurchasedItem {
