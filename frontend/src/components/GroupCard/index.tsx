@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, CardContent, Avatar, Typography, Box } from '@mui/material';
+import { Card, CardContent, Typography, Box } from '@mui/material';
+import CustomAvatar from '../CustomAvatar';
 
 interface Group {
   _id: string;
@@ -35,7 +36,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, handleGroupClick }) => {
     >
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar src={group.profilePic} sx={{ mr: 2 }} />
+          <CustomAvatar src={group.profilePic} sx={{ mr: 2 }} />
           <Typography variant="h6">{group.name}</Typography>
         </Box>
         <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
