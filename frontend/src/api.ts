@@ -299,3 +299,12 @@ export const updateRoles = async ( userIds: string[], groupId: string, newRole: 
     }
 }
 
+export const getUserDetailsWithChallenges = async (userId: string, groupId: string) => {
+    try {
+      const response = await axios.get(`${USER_ROUTE}/${userId}/details/${groupId}`);
+      return response.data.data;
+    } catch (error: any) {
+      console.error("Error getting user details:", error);
+      throw error;
+    }
+  };
