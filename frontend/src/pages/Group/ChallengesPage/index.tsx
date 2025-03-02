@@ -16,8 +16,14 @@ import {
   useTheme,
   Zoom,
   Grow,
+
+  Snackbar,
+  Alert,
+
+        
   Paper
-} from "@mui/material";
+
+        } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -44,6 +50,24 @@ const ChallengesPage: React.FC = () => {
   const [newChallengeDescription, setNewChallengeDescription] = useState("");
   const [newChallengeCoinReward, setNewChallengeCoinReward] = useState("");
   
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastSeverity, setToastSeverity] = useState<"error" | "warning" | "info" | "success">("error");
+  
+  const showToast = (message: string, severity: "error" | "warning" | "info" | "success" = "error") => {
+    setToastMessage(message);
+    setToastSeverity(severity);
+    setToastOpen(true);
+  };
+  
+  // Function to close toast
+  const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setToastOpen(false);
+  };
+
   const theme = useTheme();
   const navigate = useNavigate();
   const { id: groupId } = useParams<{ id: string }>();
@@ -153,7 +177,7 @@ const ChallengesPage: React.FC = () => {
     if (!user || !groupId) return;
     try{
       const response = await joinChallenge(user._id, challengeCode, groupId);
-      const newChallenge: IChallenge = {
+      const newChallenge: IChallengeJoined = {
         _id: response.data._id,
         title: response.data.title,
         description: response.data.description,
@@ -161,9 +185,15 @@ const ChallengesPage: React.FC = () => {
         creator: response.data.creator,
         users: response.data.users,
         code: response.data.code,
+        status: "active"
       };
-      setChallenges((prev) => [...prev, newChallenge]);
-    } catch (error) {
+      setJoinedChallenges((prev) => [...prev, newChallenge]);
+    } catch (error:any) {
+      if(error.status === 401){
+        showToast("You have already joined this challenge", "warning");
+      } else {
+        showToast("You have already joined this challenge", "warning");
+      }
       console.error("Error joining challenge :", error);
     }
     setChallengeCode("");
@@ -193,12 +223,15 @@ const ChallengesPage: React.FC = () => {
       };
 
       setChallenges((prev) => [...prev, newChallenge]);
+      showToast("Challenge created successfully!", "success");
 
       setNewChallengeTitle("");
       setNewChallengeDescription("");
       setNewChallengeCoinReward("");
       setCreateModalOpen(false);
     } catch (error) {
+      showToast("Failed to create challenge", "error");
+
       console.error("Error creating challenge:", error);
     }
   };
@@ -533,6 +566,21 @@ const ChallengesPage: React.FC = () => {
 }
         </Dialog>
       </Box>
+      <Snackbar
+        open={toastOpen}
+        autoHideDuration={6000}
+        onClose={handleToastClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleToastClose} 
+          severity={toastSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {toastMessage}
+        </Alert>
+      </Snackbar>
     </NavBar>
   );
 };

@@ -19,6 +19,7 @@ import { approveChallenge, getChallengeById, getGroupById } from "../../../api";
 import { IChallenge } from "../../../utils/types/dataTypes";
 import { useAuth } from "../../../context/AuthProvider";
 import { group } from "console";
+import LoadingPage from "../../LoadingPage";
 
 interface IChallengeDetailPage {
   _id: string; // MongoDB ObjectId as string
@@ -108,7 +109,7 @@ const ChallengeDetailPage: React.FC = () => {
     challengeStatus: string;
   }
   const [updatedUsers, setUpdatedUsers] = useState<User[]>([]);
-
+  const [loadingApprove, setLoadingApprove] = useState(false);
   useEffect(() => {
     if (challenge) {
       setUpdatedUsers(challenge.users);
@@ -117,6 +118,7 @@ const ChallengeDetailPage: React.FC = () => {
   const handleApprove = async (userID: string, challangeID : string) => {
     try {
       if(!groupId) return;
+      setLoadingApprove(true);
       const response = await approveChallenge(challangeID,userID,groupId);  
       setUpdatedUsers((prevUsers) =>
         prevUsers.map((u) =>
@@ -136,6 +138,8 @@ const ChallengeDetailPage: React.FC = () => {
     } catch (error) {
       console.error("Error approving user:", error);
       // Handle error (show notification, etc)
+    } finally{
+      setLoadingApprove(false);
     }
   };
 
@@ -302,40 +306,43 @@ const ChallengeDetailPage: React.FC = () => {
                   <Typography variant="body1" fontWeight="medium">
                     {user.name}
                   </Typography>
-
-                  {user.challengeStatus === "completed" ? (
-                    <Chip
-                      label="Completed"
-                      color="primary"
-                      sx={{ fontWeight: "medium" }}
-                    />
-                  ) : user.challengeStatus === "activ" ? (
-                    <Chip
-                      label="Approved"
-                      color="success"
-                      sx={{ fontWeight: "medium" }}
-                    />
-                  ) : user.challengeStatus === "active" ? (
-                    <Button
-                      variant="contained"
-                      size="small"
-                      color="primary"
-                      onClick={() => handleApprove(user._id, challenge._id)}
-                      sx={{
-                        minWidth: "100px",
-                        fontWeight: "medium",
-                      }}
-                    >
-                      Approve
-                    </Button>
-                  ) : (
-                    <Chip
-                      label={user.challengeStatus || "Joined"}
-                      color="default"
-                      variant="outlined"
-                      sx={{ fontWeight: "medium" }}
-                    />
-                  )}
+                  {loadingApprove ? ( 
+                    <CircularProgress size={20} />
+                    ) : 
+                    user.challengeStatus === "completed" ? (
+                      <Chip
+                        label="Completed"
+                        color="primary"
+                        sx={{ fontWeight: "medium" }}
+                      />
+                    ) : user.challengeStatus === "activ" ? (
+                      <Chip
+                        label="Approved"
+                        color="success"
+                        sx={{ fontWeight: "medium" }}
+                      />
+                    ) : user.challengeStatus === "active" ? (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="primary"
+                        onClick={() => handleApprove(user._id, challenge._id)}
+                        sx={{
+                          minWidth: "100px",
+                          fontWeight: "medium",
+                        }}
+                      >
+                        Approve
+                      </Button>
+                    ) : (
+                      <Chip
+                        label={user.challengeStatus || "Joined"}
+                        color="default"
+                        variant="outlined"
+                        sx={{ fontWeight: "medium" }}
+                      />
+                    )
+                  }
                 </Box>
               ))}
             </Box>

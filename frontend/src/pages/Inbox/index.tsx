@@ -100,8 +100,13 @@ const InboxPage: React.FC = () => {
   // Handle decline invitation
   const handleDeclineInvitation = async (notificationId: string) => {
     try {
+    
       setLoading(true);
-      await deleteNotification(notificationId);
+      if(!user?._id) {
+        setError("User not found");
+        return;
+      }
+      await deleteNotification(notificationId, user._id);
       
       // Remove the notification from the list
       setNotifications(prevNotifications => 

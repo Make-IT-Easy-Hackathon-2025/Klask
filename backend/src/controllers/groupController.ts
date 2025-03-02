@@ -261,6 +261,7 @@ export const addUserToGroup = async (req: Request, res: Response): Promise<void>
       });
       return;
     }
+    
 
     // Check if the user's ID is already in the group's users array
     const isUserIdInGroup = group.users.some(userId => userId.toString() === (user._id as mongoose.Types.ObjectId).toString());
@@ -269,8 +270,16 @@ export const addUserToGroup = async (req: Request, res: Response): Promise<void>
       group.users.push(user._id as mongoose.Schema.Types.ObjectId);
       await group.save();
     }
+    else{
+      res.status(202).json({
+        success: false,
+        message: "User is already a member of this group"
+      });
+      return
+    }
 
     // Add group to user's groups array with initial role as "user"
+
     await User.findByIdAndUpdate(user._id, {
       $push: {
         groups: {
