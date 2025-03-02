@@ -111,6 +111,17 @@ const ShopItemDetailPage: React.FC = () => {
         return theme.palette.info.main;
     }
   };
+
+  const getAvailabilityStatus = (item: ShopItem): string => {
+    if (item.quantity === 0) {
+      return "Out of Stock";
+    }
+    if (item.quantity <= 5) {
+      return "Limited";
+    }
+    return "In Stock";
+  };
+
   if (loading) {
     return (
       <NavBar isGroupPage={true} activeTab="shop">
@@ -194,9 +205,11 @@ const ShopItemDetailPage: React.FC = () => {
                         sx={{ fontWeight: "bold" }}
                       />
                       <Chip
-                        label={item.availability}
+                        label={getAvailabilityStatus(item)}
                         sx={{
-                          bgcolor: getAvailabilityColor(item.availability),
+                          bgcolor: getAvailabilityColor(
+                            getAvailabilityStatus(item)
+                          ),
                           color: "white",
                           fontWeight: "bold",
                         }}
@@ -233,7 +246,6 @@ const ShopItemDetailPage: React.FC = () => {
                     )}
 
                     <Box sx={{ mt: "auto" }}>
-                     
                       <Box
                         sx={{
                           display: "flex",

@@ -289,3 +289,13 @@ export const updateUser = async (id: string, name: string, profilePicture: strin
     }
 }
 
+export const updateRoles = async ( userIds: string[], groupId: string, newRole: string) => {
+    try {
+        const response = await axios.post(`${USER_ROUTE}/update-role`, { userIds, groupId, newRole});
+        return response.data;
+    } catch (error: any) {
+        console.error("Error updating role:", error);
+        throw new Error(error);
+    }
+}
+

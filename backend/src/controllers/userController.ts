@@ -62,7 +62,6 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   const { name, desc, profilePicture } = req.body;
-  
   try {
     // Find user first to check if it exists
     const user = await User.findById(id);
@@ -98,6 +97,40 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
       success: false, 
       message: "Error updating user", 
       error: error.message 
+    });
+  }
+};
+
+export const updateUsersRole = async (req: Request, res: Response): Promise<void> => {
+  const { userIds, groupId, newRole } = req.body;
+  
+  if (!Array.isArray(userIds) || !groupId || !newRole) {
+    res.status(400).json({
+      success: false,
+      message: "Please provide userIds, groupId, and newRole"
+    });
+    return;
+  }
+
+  try {
+
+    for (const userId of userIds) {
+      await User.findByIdAndUpdate(
+      userId,
+      { $set: { "groups.$[group].role": newRole } },
+      { arrayFilters: [{ "group.GID": groupId}], new: true }
+      );
+    }
+    res.status(200).json({
+      success: true,
+      message: "Users' roles updated successfully"
+    });
+  } catch (error: any) {
+    console.error("Error updating users' roles:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error updating users' roles",
+      error: error.message
     });
   }
 };

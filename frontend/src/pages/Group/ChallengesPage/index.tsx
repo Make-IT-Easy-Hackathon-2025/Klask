@@ -16,21 +16,27 @@ import {
   useTheme,
   Zoom,
   Grow,
+
   Snackbar,
   Alert,
-} from "@mui/material";
+
+        
+  Paper
+
+        } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../../components/Navbar";
 import { useAuth } from "../../../context/AuthProvider";
 import { createChallenge, getCreatedChallenges, getGroupById, getJoinedChallenges, joinChallenge } from "../../../api";
 import { IChallenge } from "../../../utils/types/dataTypes";
-import { group } from "console";
 
-interface IChallengeJoined extends IChallenge{
+interface IChallengeJoined extends IChallenge {
   status: string;
 }
+
 const ChallengesPage: React.FC = () => {
   const [challenges, setChallenges] = useState<IChallenge[]>([]);
   const [joinedChallenges, setJoinedChallenges] = useState<IChallenge[]>([]);
@@ -67,7 +73,7 @@ const ChallengesPage: React.FC = () => {
   const { id: groupId } = useParams<{ id: string }>();
   const { user } = useAuth();
   const isAuthorized = user?.groups.find((group) => group.GID === groupId)?.role === "admin" 
-  || user?.groups.find((group) => group.GID === groupId)?.role === "moderator";
+    || user?.groups.find((group) => group.GID === groupId)?.role === "moderator";
   
   const [coin, setCoin] = useState<{name: string, img: string}>();
 
@@ -285,6 +291,68 @@ const ChallengesPage: React.FC = () => {
           <Typography color="error" variant="h6" align="center">
             {error}
           </Typography>
+        ) : (isAuthorized ? challenges : joinedChallenges).length === 0 ? (
+          <Paper
+            elevation={0}
+            sx={{
+              py: 6,
+              px: 4,
+              mt: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              bgcolor: 'transparent',
+              borderRadius: 2,
+              textAlign: 'center'
+            }}
+          >
+            <EmojiEventsIcon
+              sx={{
+                fontSize: 80,
+                mb: 2,
+                color: theme.palette.text.secondary,
+                opacity: 0.5
+              }}
+            />
+            <Typography
+              variant="h5"
+              sx={{
+                mb: 2,
+                color: theme.palette.text.primary,
+                fontWeight: 'medium'
+              }}
+            >
+              No Active Challenges
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                mb: 3,
+                color: theme.palette.text.secondary,
+                maxWidth: '500px'
+              }}
+            >
+              {isAuthorized
+                ? "Start by creating your first challenge. Click the + button below to get started!"
+                : "There are no challenges available for you at the moment. Join a challenge using a challenge code!"}
+            </Typography>
+            <Button
+              variant="contained"
+              color={isAuthorized ? "secondary" : "primary"}
+              startIcon={isAuthorized ? <AddCircleIcon /> : <AddIcon />}
+              onClick={() => isAuthorized ? setCreateModalOpen(true) : setJoinModalOpen(true)}
+              sx={{
+                mt: 2,
+                px: 4,
+                py: 1,
+                borderRadius: 2,
+                textTransform: 'none',
+                fontSize: '1.1rem'
+              }}
+            >
+              {isAuthorized ? "Create First Challenge" : "Join a Challenge"}
+            </Button>
+          </Paper>
         ) : (
           <Grid container spacing={3}>
             {(isAuthorized ? challenges : joinedChallenges).map((challenge, index) => (
