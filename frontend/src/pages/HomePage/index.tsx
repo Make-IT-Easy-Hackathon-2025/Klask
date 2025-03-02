@@ -1,6 +1,5 @@
 import React, { use, useEffect, useState } from "react";
 import { Box, Typography, Card, CardContent, Fab, Dialog, DialogTitle, TextField, Button } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import NavBar from "../../components/Navbar";
 import { IGroup } from "../../utils/types/dataTypes";
 import { useAuth } from "../../context/AuthProvider";

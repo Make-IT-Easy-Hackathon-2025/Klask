@@ -25,6 +25,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { useParams } from "react-router-dom";
 import { getGroupUsers, getUserDetailsWithChallenges } from "../../../api";
+import LoadingPage from "../../LoadingPage";
 
 interface Challenge {
   _id: string;
@@ -83,7 +84,8 @@ const GroupPageLeaderBoard: React.FC = () => {
       try {
         const usersData = await getGroupUsers(groupId);
         // Sort users by coins (descending)
-        const sortedUsers = usersData.sort((a: GroupUser, b: GroupUser) => b.coins - a.coins);
+        const filteredUsers = usersData.filter((user: GroupUser) => user.role !== 'admin');
+        const sortedUsers = filteredUsers.sort((a: GroupUser, b: GroupUser) => b.coins - a.coins);
         setUsers(sortedUsers);
         setError(null);
       } catch (err) {
@@ -125,6 +127,12 @@ const GroupPageLeaderBoard: React.FC = () => {
     setSelectedUser(null);
   };
 
+  if(loading){
+    return       <Navbar isGroupPage={true} activeTab="leaderboard">
+      <LoadingPage/>
+      </Navbar>
+
+  }
   return (
     <>
       <Navbar isGroupPage={true} activeTab="leaderboard">
