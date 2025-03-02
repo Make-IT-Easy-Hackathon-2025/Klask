@@ -300,6 +300,17 @@ export const updateRoles = async ( userIds: string[], groupId: string, newRole: 
 }
 
 
+export const getPurchasedItems = async (userId: string) => {
+    try {
+        const response = await axios.get(`${USER_ROUTE}/${userId}/purchasedItems`);
+        return response.data.purchasedItems;
+    } catch (error: any) {
+        console.error("Error getting purchased items:", error);
+        throw new Error(error);
+    }
+};
+
+
 export const getUserDetailsWithChallenges = async (userId: string, groupId: string) => {
     try {
       const response = await axios.get(`${USER_ROUTE}/${userId}/details/${groupId}`);
@@ -319,4 +330,3 @@ export const updateQuantity = async (id: string, quantity: number) => {
         throw new Error(error);
     }
 }
-

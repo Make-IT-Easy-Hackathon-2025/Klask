@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Box, Typography, Avatar, Divider, Button, Fab, Dialog, DialogTitle, TextField, Box as MuiBox, Badge, useTheme } from "@mui/material";
+import { Box, Typography, Avatar, Divider, Button, Fab, Dialog, DialogTitle, TextField, Box as MuiBox, Badge, useTheme, Grid, Card, CardContent } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import NavBar from "../../components/Navbar";
-import { IGroup } from "../../utils/types/dataTypes";
+import { IGroup, ShopItem } from "../../utils/types/dataTypes";
 import { useAuth } from "../../context/AuthProvider";
-import { createGroup, getCreatedGroups, updateUser} from "../../api";
+import { createGroup, getCreatedGroups, getPurchasedItems, updateUser} from "../../api";
 import LoadingPage from "../LoadingPage";
 import { useNavigate } from "react-router-dom";
 import GroupCard from "../../components/GroupCard"
@@ -15,6 +15,14 @@ import { ThemeContext } from "../../ThemeContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import CustomAvatar from "../../components/CustomAvatar";
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+
+
+interface PurchasedItem {
+  item: ShopItem;
+  quantity: number;
+}
 
 
 const ProfilePage: React.FC = () => {
@@ -26,32 +34,6 @@ const ProfilePage: React.FC = () => {
   const [editedName, setEditedName] = useState("");
   const [editedProfilePic, setEditedProfilePic] = useState<File | null>(null);
   const [previewProfilePic, setPreviewProfilePic] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (user) {
-      setEditedName(user.name);
-    }
-  }, [user]);
-
-  useEffect(() => {
-
-    const fetchGroups = async () => {
-      if(!user) {
-          return;
-      }
-      try{
-        setLoading(true);
-      const userGroups = await getCreatedGroups(user._id);
-      setGroups(userGroups);
-      } catch (error) {
-          console.error("Error fetching groups", error);
-      } finally{
-          setLoading(false);
-      }
-    } 
-    fetchGroups();
-  }, [user]);
-
   const [open, setOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupDescription, setNewGroupDescription] = useState("");
@@ -60,6 +42,38 @@ const ProfilePage: React.FC = () => {
   const [newGroupProfilePic, setNewGroupProfilePic] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [purchasedItems, setPurchasedItems] = useState<PurchasedItem[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      setEditedName(user.name);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) {
+        return;
+      }
+      try {
+        setLoading(true);
+        const [userGroups, items] = await Promise.all([
+          getCreatedGroups(user._id),
+          getPurchasedItems(user._id),
+        ]);
+        setGroups(userGroups);
+        setPurchasedItems(items);
+      } catch (error) {
+        console.error("Error fetching data", error);
+        setError("Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
   // Function to handle adding a new group
   const handleAddGroup = async () => {
     if (newGroupName.trim() === "") return;
@@ -263,18 +277,81 @@ if(loading) {
         {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
       </Button>
 
-        {/* My Groups Section */}
-        <Typography variant="h5" gutterBottom sx={{ marginTop: 4 }}>
-          My Groups
-        </Typography>
-        {groups.map((group) => (
-          <GroupCard
-            key={group._id}
-            group={group}
-            handleGroupClick={handleGroupClick}
-          />
-        ))}
-
+      <Grid container spacing={6}>
+        <Grid item xs={12} md={6}>
+        <Box>
+            <Typography variant="h5" gutterBottom sx={{ marginTop: 4 }}>
+              Purchased Items
+            </Typography>
+            <Box
+              sx={{
+                height: 400, // Fixed height
+                overflowY: 'auto', // Enable vertical scrolling
+              }}
+            >
+              {loading ? (
+                <Typography>Loading purchased items...</Typography>
+              ) : error ? (
+                <Typography>{error}</Typography>
+              ) : (
+                <Box>
+                  {purchasedItems.length === 0 ? (
+                    <Typography>No purchased items found.</Typography>
+                  ) : (
+                    <Grid container spacing={2}>
+                      {purchasedItems.map((item, index) => (
+                        <Grid item xs={12} key={index}>
+                          <Card>
+                            <CardContent>
+                                <Grid container spacing={2} alignItems="center">
+                                <Grid item>
+                                  <CustomAvatar
+                                  src={item.item.image}
+                                  alt={item.item.name}
+                                  sx={{ width: 56, height: 56 }}
+                                  />
+                                </Grid>
+                                <Grid item xs>
+                                  <Typography variant="h6">{item.item.name}</Typography>
+                                </Grid>
+                                <Grid item>
+                                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                  <ShoppingCartIcon sx={{ marginRight: 1 }} />
+                                  <Typography>{item.quantity}</Typography>
+                                  </Box>
+                                </Grid>
+                                <Grid item>
+                                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                  <AttachMoneyIcon sx={{ marginRight: 1 }} />
+                                  <Typography>{item.item.price}</Typography>
+                                  </Box>
+                                </Grid>
+                                </Grid>
+                        
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  )}
+                </Box>
+              )}
+            </Box>
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Typography variant="h5" gutterBottom sx={{ marginTop: 4 }}>
+            My Groups
+          </Typography>
+          {groups.map((group) => (
+            <GroupCard
+              key={group._id}
+              group={group}
+              handleGroupClick={handleGroupClick}
+            />
+          ))}
+        </Grid>
+      </Grid>
         {/* Floating Add Button */}
         <Box position="fixed" bottom={20} right={20}>
           <Fab color="primary" onClick={() => setOpen(true)}>

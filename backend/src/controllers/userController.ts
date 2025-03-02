@@ -137,6 +137,29 @@ export const updateUsersRole = async (req: Request, res: Response): Promise<void
   }
 };
 
+
+export const getPurchasedItems = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id).populate("purchasedItems.itemID");
+    if (!user) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
+    }
+
+    const purchasedItems = user.purchasedItems.map(item => ({
+      item: item.itemID,
+      quantity: item.quantity
+    }));
+
+    res.status(200).json({ success: true, purchasedItems });
+  } catch (error: any) {
+    console.error("Error getting purchased items:", error);
+    res.status(500).json({ success: false, message: "Error getting purchased items", error: error.message });
+  }
+}
+
 export const getUserDetailsWithChallenges = async (req: Request, res: Response): Promise<void> => {
   const { userId, groupId } = req.params;
 
