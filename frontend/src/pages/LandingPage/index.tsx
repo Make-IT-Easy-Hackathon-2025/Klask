@@ -135,7 +135,7 @@ const LandingPage: React.FC = () => {
               }}
             >
               <Box sx={{ flexShrink: 0 }}>{section.icon}</Box>
-              <Typography variant="body1" sx={{ fontSize: "18px", color: theme.palette.text.primary }}>
+              <Typography variant="body1" sx={{ fontSize: "18px", color: theme.palette.text.primary, fontWeight:'bold' }}>
                 {section.text}
               </Typography>
             </Box>
