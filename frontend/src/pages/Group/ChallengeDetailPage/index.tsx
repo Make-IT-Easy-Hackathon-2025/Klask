@@ -272,9 +272,9 @@ const ChallengeDetailPage: React.FC = () => {
                   </Typography>
                 </Box>
 
-                <Button variant="contained" color="primary" size="medium">
+                { !isAdmin && <Button variant="contained" color="primary" size="medium">
                   Quit Challenge
-                </Button>
+                </Button>}
               </Box>
             </Paper>
           </>
