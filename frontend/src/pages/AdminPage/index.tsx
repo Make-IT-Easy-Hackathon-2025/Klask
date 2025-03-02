@@ -42,6 +42,8 @@ import {
 import { useParams } from "react-router-dom";
 import NavBar from "../../components/Navbar";
 import { getGroupUsers, getUserByEmail, sendNotification, updateRoles } from "../../api";
+import placeholderprofilePicture from '../../assets/placeholder_profile.png';
+import sapProfile from '../../assets/sap.png';
 interface GroupUser {
   _id: string;
   name: string;
@@ -347,7 +349,7 @@ const GroupManagePage: React.FC = () => {
                   )}
                   
                   <ListItemAvatar>
-                    <Avatar alt={user.name} src={user.profilePicture} />
+                    <Avatar alt={user.name} src={user.profilePicture ||  user.role === 'admin'? sapProfile :placeholderprofilePicture} />
                   </ListItemAvatar>
                   
                   <ListItemText

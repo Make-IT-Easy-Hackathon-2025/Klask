@@ -27,6 +27,7 @@ import { ShopItem } from "../../../utils/types/dataTypes";
 import { getShopItemById, purchaseShopItem, updateQuantity } from "../../../api";
 import { useAuth } from "../../../context/AuthProvider";
 import LoadingPage from "../../LoadingPage";
+import CustomCoin from "../../../components/CustomCoin";
 
 const ShopItemDetailPage: React.FC = () => {
   const theme = useTheme();
@@ -263,8 +264,8 @@ const handleDeleteItem = async () => {
 
                     <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
                       <Chip
-                        icon={<LocalOfferIcon />}
-                        label={`${item.price} coins`}
+                        icon={<CustomCoin size={36}/>}
+                        label={`${item.price} Sapienthium`}
                         color="primary"
                         sx={{ fontWeight: "bold", fontSize: "1.1rem" }}
                       />

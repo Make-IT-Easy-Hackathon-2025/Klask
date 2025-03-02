@@ -26,8 +26,8 @@ import {
   createShopItem,
   getAllShopItemsByGroupId,
 } from "../../../api";
-import { BoxTypeMap } from "@mui/system";
-import { OverridableComponent } from "@mui/types";
+import CustomCoin from "../../../components/CustomCoin";
+import placeHolderShopImage from "../../../assets/shop_item.png";
 
 const ShopPage: React.FC = () => {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
@@ -219,10 +219,10 @@ const ShopPage: React.FC = () => {
                         flexDirection: "column",
                       }}
                     >
-                      {item.image && (
+                 
                         <Box sx={{ mb: 2, textAlign: "center" }}>
                           <img
-                            src={item.image}
+                            src={item.image || placeHolderShopImage}
                             alt={item.name}
                             style={{
                               maxWidth: "100%",
@@ -232,8 +232,6 @@ const ShopPage: React.FC = () => {
                             }}
                           />
                         </Box>
-                      )}
-
                       <Box
                         sx={{
                           display: "flex",
@@ -286,14 +284,16 @@ const ShopPage: React.FC = () => {
                           mt: "auto",
                         }}
                       >
+                        <CustomCoin/>
                         <Typography
                           variant="body1"
                           sx={{
                             fontWeight: "bold",
-                            color: theme.palette.primary.main,
+                            color: theme.palette.text.primary,
+                            marginLeft: 1,
                           }}
                         >
-                          {item.price} coins
+                          {item.price}
                         </Typography>
                       </Box>
                     </CardContent>

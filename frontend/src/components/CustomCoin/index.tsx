@@ -1,7 +1,7 @@
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import { deepOrange } from '@mui/material/colors';
-import placeholderImage from '../../assets/sap.png';
+import placeholderImage from '../../assets/sapi_coin.png';
 
 interface CustomAvatarProps {
   src?: string;
@@ -10,19 +10,19 @@ interface CustomAvatarProps {
   sx?: object;
 }
 
-const CustomAvatar: React.FC<CustomAvatarProps> = ({
+const CustomCoin: React.FC<CustomAvatarProps> = ({
   src,
   alt = 'Placeholder Image',
-  size = 56,
+  size = 32,
   sx = {},
 }) => {
   return (
     <Avatar
-      sx={{ width: size, height: size, ...sx }}
+      sx={{  width: size, height: size, ...sx }}
       alt={alt}
       src={src || placeholderImage}
     />
   );
 };
 
-export default CustomAvatar;
+export default CustomCoin;

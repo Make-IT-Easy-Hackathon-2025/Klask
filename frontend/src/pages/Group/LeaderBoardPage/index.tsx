@@ -27,6 +27,10 @@ import { useParams } from "react-router-dom";
 import { getGroupUsers, getUserDetailsWithChallenges } from "../../../api";
 import LoadingPage from "../../LoadingPage";
 
+import CustomCoin from "../../../components/CustomCoin";
+import placeholderProfilePicture from '../../../assets/placeholder_profile.png';
+
+
 interface Challenge {
   _id: string;
   title: string;
@@ -197,7 +201,7 @@ const GroupPageLeaderBoard: React.FC = () => {
                 {/* Avatar */}
                 <Avatar 
                   alt={user.name} 
-                  src={user.profilePicture}
+                  src={user.profilePicture || placeholderProfilePicture}
                   sx={{ 
                     width: 50, 
                     height: 50,
@@ -211,8 +215,8 @@ const GroupPageLeaderBoard: React.FC = () => {
                     {user.name}
                   </Typography>
                   <Chip 
-                    icon={<MonetizationOnIcon />} 
-                    label={`${user.coins} coins`}
+                    icon={<CustomCoin size={36}/>} 
+                    label={`${user.coins} Sapienthium`}
                     size="small"
                     sx={{ 
                       backgroundColor: index < 3 ? `${getMedalColor(index)}22` : theme.palette.action.selected,
@@ -276,7 +280,7 @@ const GroupPageLeaderBoard: React.FC = () => {
                 <Box>
                   <Box display="flex" alignItems="center" mb={4}>
                     <Avatar
-                      src={selectedUser.profilePicture}
+                      src={selectedUser.profilePicture || placeholderProfilePicture}
                       alt={selectedUser.name}
                       sx={{ width: 100, height: 100, mr: 3 }}
                     />
@@ -284,9 +288,6 @@ const GroupPageLeaderBoard: React.FC = () => {
                       <Typography variant="h4" fontWeight="bold" gutterBottom>
                         {selectedUser.name}
                       </Typography>
-                      {/* <Typography variant="body1" color="text.secondary">
-                        {selectedUser.desc || "No description available"}
-                      </Typography> */}
                     </Box>
                   </Box>
 

@@ -20,6 +20,10 @@ import { PATHS } from "../../navigation/paths";
 import { getGroupById } from "../../api";
 import { useAuth } from "../../context/AuthProvider";
 import SettingsIcon from "@mui/icons-material/Settings";
+import CustomAvatar from "../CustomAvatar";
+import placeholderImage from '../../assets/sap.png';
+import CustomCoin from "../CustomCoin";
+
 
 interface Group {
   _id: string;
@@ -171,9 +175,9 @@ const GroupNavbar: React.FC<GroupToolbarProps> = ({
             <Typography color="error" variant="body2">{error}</Typography>
           ) : group ? (
             <>
-              <Avatar 
+              <CustomAvatar
                 alt={group.name} 
-                src={group.profilePic || undefined} 
+                src={placeholderImage} 
                 sx={{ width: 40, height: 40 }}
               />
               <Typography
@@ -182,7 +186,7 @@ const GroupNavbar: React.FC<GroupToolbarProps> = ({
               >
                 {group.name}
               </Typography>
-              <CoinIcon sx={{ color: theme.palette.text.primary }} />
+              <CustomCoin/>
               <Typography
                 variant="body1"
                 sx={{ color: theme.palette.text.primary }}
