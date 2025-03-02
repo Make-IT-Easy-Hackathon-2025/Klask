@@ -10,11 +10,15 @@ import {
   useTheme,
   Zoom,
   Grow,
+  Paper,
   Theme,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../../components/Navbar";
-import { Add as AddIcon } from "@mui/icons-material";
+import {
+  Add as AddIcon,
+  ShoppingBag as ShoppingBagIcon,
+} from "@mui/icons-material";
 import { ShopItem } from "../../../utils/types/dataTypes";
 import CreateShopItemModal from "../../../components/CreateShopItemModal";
 import { useAuth } from "../../../context/AuthProvider";
@@ -25,14 +29,11 @@ import {
 import { BoxTypeMap } from "@mui/system";
 import { OverridableComponent } from "@mui/types";
 
-
 const ShopPage: React.FC = () => {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [redeemModalOpen, setRedeemModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMod, setIsMod] = useState(false);
 
@@ -45,14 +46,12 @@ const ShopPage: React.FC = () => {
     itemData: Omit<ShopItem, "id"> & { imageFile?: File }
   ) => {
     try {
-      console.log(itemData);
       if (!groupId) return;
       const newItem = await createShopItem({
         ...itemData,
         availability: itemData.availability.toLowerCase(),
         groupId: groupId,
       });
-
       setShopItems([...shopItems, newItem]);
     } catch (error) {
       console.error("Error creating item:", error);
@@ -63,13 +62,12 @@ const ShopPage: React.FC = () => {
   useEffect(() => {
     const fetchShopItems = async () => {
       if (!groupId) return;
-
       try {
         setLoading(true);
         const items = await getAllShopItemsByGroupId(groupId);
         setShopItems(items);
       } catch (err) {
-        console.error("Error getting shop items:", error);
+        console.error("Error getting shop items:", err);
         setError("Failed to load shop items");
       } finally {
         setLoading(false);
@@ -80,38 +78,16 @@ const ShopPage: React.FC = () => {
   }, [groupId]);
 
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user || !groupId) return;
-      const groupData = user.groups.find((g) => g.GID === groupId);
-      setIsAdmin(groupData?.role === "admin");
-    };
-
-    checkAdminStatus();
+    if (!user || !groupId) return;
+    const groupData = user.groups.find((g) => g.GID === groupId);
+    setIsAdmin(groupData?.role === "admin");
+    setIsMod(groupData?.role === "moderator");
   }, [user, groupId]);
-
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user || !groupId) return;
-      const groupData = user.groups.find((g) => g.GID === groupId);
-      setIsMod(groupData?.role === "moderator");
-    };
-
-    checkAdminStatus();
-  }, [user, groupId]);
-
-  const handleRedeemCoupon = () => {
-
-    setCouponCode('');
-    setRedeemModalOpen(false);
-
-    // Here you would typically make an API call to redeem the coupon
-    alert(`Successfully redeemed coupon: ${couponCode}`);
-  };
 
   const handleItemClick = (itemId: string) => {
     navigate(`/groups/${groupId}/shop/${itemId}`);
   };
-  console.log(shopItems);
+
   const getAvailabilityColor = (availability: string) => {
     switch (availability.toLowerCase()) {
       case "in stock":
@@ -127,9 +103,30 @@ const ShopPage: React.FC = () => {
     }
   };
 
+  const getAvailabilityStatus = (item: ShopItem): string => {
+    if (item.quantity === 0) {
+      return "Out of Stock";
+    }
+    if (item.quantity <= 5) {
+      return "Limited";
+    }
+    return "In Stock";
+  };
+
   return (
     <NavBar isGroupPage={true} activeTab="shop">
-      <Box sx={{ p: 3, minHeight: "85vh", position: "relative",  }}>
+
+      <Box
+        sx={{
+          p: 3,
+          minHeight: "85vh",
+          width: "100%",
+          maxWidth: "1200px",
+          margin: "0 auto",
+          position: "relative",
+        }}
+      >
+
         <Typography
           variant="h4"
           component="h1"
@@ -152,6 +149,52 @@ const ShopPage: React.FC = () => {
           <Typography color="error" variant="h6" align="center">
             {error}
           </Typography>
+        ) : shopItems.length === 0 ? (
+          <Paper
+            elevation={0}
+            sx={{
+              py: 6,
+              px: 4,
+              mt: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              bgcolor: 'transparent',
+              borderRadius: 2,
+              textAlign: 'center'
+            }}
+          >
+            <ShoppingBagIcon 
+              sx={{ 
+                fontSize: 80, 
+                mb: 2,
+                color: theme.palette.text.secondary,
+                opacity: 0.5
+              }} 
+            />
+            <Typography
+              variant="h5"
+              sx={{
+                mb: 2,
+                color: theme.palette.text.primary,
+                fontWeight: 'medium'
+              }}
+            >
+              No Items Available
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                mb: 3,
+                color: theme.palette.text.secondary,
+                maxWidth: '500px'
+              }}
+            >
+              {isAdmin || isMod 
+                ? "Start by adding items to your shop. Click the + button below to create your first item!"
+                : "There are no items available in the shop at the moment. Check back later!"}
+            </Typography>
+          </Paper>
         ) : (
           <Grid container spacing={3}>
             {shopItems.map((item, index) => (
@@ -207,7 +250,9 @@ const ShopPage: React.FC = () => {
                         </Typography>
                         <Box
                           sx={{
-                            bgcolor: getAvailabilityColor(item.availability),
+                            bgcolor: getAvailabilityColor(
+                              getAvailabilityStatus(item)
+                            ),
                             color: "#fff",
                             borderRadius: 1,
                             px: 1,
@@ -216,7 +261,7 @@ const ShopPage: React.FC = () => {
                             fontWeight: "bold",
                           }}
                         >
-                          {item.availability}
+                          {getAvailabilityStatus(item)}
                         </Box>
                       </Box>
 
@@ -263,7 +308,7 @@ const ShopPage: React.FC = () => {
           <Zoom in={!loading}>
             <Fab
               color="primary"
-              aria-label="join challenge"
+              aria-label="create item"
               sx={{
                 position: "fixed",
                 bottom: 24,
@@ -277,8 +322,6 @@ const ShopPage: React.FC = () => {
           </Zoom>
         )}
 
-        {/* Redeem Coupon Modal */}
-
         <CreateShopItemModal
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
@@ -290,8 +333,5 @@ const ShopPage: React.FC = () => {
   );
 };
 
-export default ShopPage;
-function styled(Box: OverridableComponent<BoxTypeMap<{}, "div", Theme>>) {
-  throw new Error("Function not implemented.");
-}
 
+export default ShopPage;
