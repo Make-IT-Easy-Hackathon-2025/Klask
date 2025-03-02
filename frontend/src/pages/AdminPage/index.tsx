@@ -125,8 +125,6 @@ const GroupManagePage: React.FC = () => {
     try {
       // Replace with your actual API call
       if (groupId) {
-        console.log("Group ID:", groupId);
-        console.log("New role:", roleToChange);
         await updateRoles(selectedUsers, groupId, roleToChange);
       } else {
         setSnackbar({

@@ -28,11 +28,11 @@ const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
   ,[activeTab]);
 
   const logo = theme.palette.mode === 'light' ? darkLogo : lightLogo;
-
+  const isLightTheme = theme.palette.mode === 'light' ? true : false;
 
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <AppBar position="static" sx={{ backgroundColor: theme.palette.primary.main }}>
+      <AppBar position="static">
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         
         <Box onClick={() => navigate("/home")} sx={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
@@ -43,7 +43,7 @@ const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
             <IconButton
               color="inherit"
               onClick={() => navigate("/home")}
-              sx={location.pathname === "/home" ? { color: theme.palette.secondary.main, transform: "scale(1.3)" } : {}}
+              sx={location.pathname === "/home" ? {color: isLightTheme ? theme.palette.background.paper : theme.palette.primary.main, transform: "scale(1.3)" } : {}}
             >
               <GroupsIcon />
             </IconButton>
@@ -52,7 +52,7 @@ const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
             <IconButton
               color="inherit"
               onClick={() => navigate("/inbox")}
-              sx={location.pathname === "/inbox" ? { color: theme.palette.secondary.main, transform: "scale(1.3)" } : {}}
+              sx={location.pathname === "/inbox" ? { color: isLightTheme ? theme.palette.background.paper : theme.palette.primary.main, transform: "scale(1.3)" } : {}}
             >
               <MailIcon />
             </IconButton>
@@ -61,7 +61,7 @@ const NavBar: React.FC<NavBarProps> = ({ children, isGroupPage, activeTab}) => {
             <IconButton
               color="inherit"
               onClick={() => navigate("/profile")}
-              sx={location.pathname === "/profile" ? { color: theme.palette.secondary.main, transform: "scale(1.3)" } : {}}
+              sx={location.pathname === "/profile" ? {  color: isLightTheme ? theme.palette.background.paper : theme.palette.primary.main, transform: "scale(1.3)" } : {}}
             >
               <AccountCircleIcon />
             </IconButton>
