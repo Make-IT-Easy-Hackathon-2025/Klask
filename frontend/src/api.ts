@@ -298,4 +298,12 @@ export const updateRoles = async ( userIds: string[], groupId: string, newRole: 
         throw new Error(error);
     }
 }
-
+export const updateQuantity = async (id: string, quantity: number) => {
+    try {
+        const response = await axios.post(`${SHOP_ROUTE}/updateQuantity`, {id, quantity});
+        return response.data.item;
+    } catch (error: any) {
+        console.error("Error updating quantity:", error);
+        throw new Error(error);
+    }
+}
