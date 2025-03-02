@@ -323,7 +323,7 @@ if(loading) {
                                 <Grid item>
                                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                   <AttachMoneyIcon sx={{ marginRight: 1 }} />
-                                  <Typography>{item.item.price}</Typography>
+                                  <Typography>{item.item.price * item.quantity}</Typography>
                                   </Box>
                                 </Grid>
                                 </Grid>
