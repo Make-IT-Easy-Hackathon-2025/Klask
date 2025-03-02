@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import ShopItem from "../models/shopItemModel";
 import Group from "../models/groupModel";
 import User from "../models/userModel";
+import Notifications from "../models/notificationModel";
+import mongoose from "mongoose";
 
 export const getAllShopItemsByGroupId = async (req: Request, res: Response): Promise<void> => {
   const { groupId } = req.params;
@@ -172,6 +174,56 @@ export const getShopItemById = async (req: Request, res: Response): Promise<void
         shopItem.quantity -= quantity;
         shopItem.save();
 
+        // send a notification to the user that they have purchased an item
+        const group = await Group.findById(groupId);
+        if (!group) {
+            res.status(404).json({ success: false, message: "Group not found" });
+            return;
+        }
+
+        // 1. Send notification to the buyer
+        const buyerNotification = new Notifications({
+            message: `You've purchased ${quantity} ${quantity > 1 ? 'units' : 'unit'} of "${shopItem.name}" for ${totalCost} coins.`,
+            isInvite: false,
+            groupID: groupId
+        });
+        
+        const savedBuyerNotification = await buyerNotification.save();
+        
+        // Add notification to the user's notifications list
+        await User.findByIdAndUpdate(userId, {
+            $push: { notifications: savedBuyerNotification._id }
+        });
+         // 2. Find admin users and notify them about the purchase
+         const adminUsers = await User.find({
+          "groups": {
+              $elemMatch: {
+                  "GID": groupId,
+                  "role": "admin"
+              }
+          }
+      });
+
+      // Create and send notifications to all admins
+      for (const admin of adminUsers) {
+          // Skip if the buyer is also an admin
+          if ((admin._id as mongoose.Types.ObjectId).toString() === userId) continue;
+          
+          const adminNotification = new Notifications({
+              message: `${user.name} has purchased ${quantity} ${quantity > 1 ? 'units' : 'unit'} of "${shopItem.name}" from the group shop.`,
+              isInvite: false,
+              groupID: groupId
+          });
+          
+          const savedAdminNotification = await adminNotification.save();
+          
+          // Add notification to the admin's notifications list
+          await User.findByIdAndUpdate(admin._id, {
+              $push: { notifications: savedAdminNotification._id }
+          });
+      }
+
+
         res.status(200).json({ 
             success: true, 
             message: "Purchase successful",
@@ -183,3 +235,25 @@ export const getShopItemById = async (req: Request, res: Response): Promise<void
         res.status(500).json({ success: false, message: "Error purchasing item" });
     }
 };
+
+export const updateQuantity = async (req: Request, res: Response): Promise<void> => {
+  const { id, quantity } = req.body;
+
+  try {
+    const updatedItem = await
+    ShopItem.findByIdAndUpdate(id, {
+      quantity
+    }, { new: true });    
+
+    if (!updatedItem) {
+      res.status(404).json({ message: "Shop item not found" });
+      return;
+    }
+
+    res.status(200).json({ message: "Quantity updated successfully", item: updatedItem });
+  }
+  catch (error: any) {
+    console.error("Error updating quantity:", error);
+    res.status(500).json({ message: "Error updating quantity", error });
+  }
+}

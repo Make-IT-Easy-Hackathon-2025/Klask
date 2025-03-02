@@ -24,7 +24,7 @@ import {
 } from "@mui/icons-material";
 import NavBar from "../../../components/Navbar";
 import { ShopItem } from "../../../utils/types/dataTypes";
-import { getShopItemById, purchaseShopItem } from "../../../api";
+import { getShopItemById, purchaseShopItem, updateQuantity } from "../../../api";
 import { useAuth } from "../../../context/AuthProvider";
 import LoadingPage from "../../LoadingPage";
 
@@ -37,6 +37,9 @@ const ShopItemDetailPage: React.FC = () => {
   const { itemId, id: groupId } = useParams<{ itemId: string; id: string }>();
   const { user } = useAuth();
   const [error, setError] = useState<string | undefined>();
+  const isAuthorized = user?.groups.find((group) => group.GID === groupId)?.role === "admin" 
+    || user?.groups.find((group) => group.GID === groupId)?.role === "moderator";
+  
 
   useEffect(() => {
     const fetchItemDetails = async () => {
@@ -121,6 +124,73 @@ const ShopItemDetailPage: React.FC = () => {
     }
     return "In Stock";
   };
+
+
+
+  // Add these state variables
+const [adminQuantity, setAdminQuantity] = useState<number | null>(null);
+const [updatingQuantity, setUpdatingQuantity] = useState(false);
+const [quantityUpdateError, setQuantityUpdateError] = useState<string | null>(null);
+const [quantityUpdateSuccess, setQuantityUpdateSuccess] = useState(false);
+const [deletingItem, setDeletingItem] = useState(false);
+
+// Add these functions
+const handleUpdateQuantity = async () => {
+  if (adminQuantity === null || !item || !groupId) return;
+  
+  setUpdatingQuantity(true);
+  setQuantityUpdateError(null);
+  setQuantityUpdateSuccess(false);
+  
+  try {
+    
+    const response = await updateQuantity(item._id, adminQuantity)
+    // Update the local item state with new quantity
+    setItem({
+      ...item,
+      quantity: adminQuantity
+    });
+    
+    setAdminQuantity(null);
+    setQuantityUpdateSuccess(true);
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+      setQuantityUpdateSuccess(false);
+    }, 3000);
+  } catch (err) {
+    console.error("Failed to update quantity:", err);
+    setQuantityUpdateError("Failed to update item quantity");
+  } finally {
+    setUpdatingQuantity(false);
+  }
+};
+
+const handleDeleteItem = async () => {
+  if (!window.confirm("Are you sure you want to remove this item from the shop?")) {
+    return;
+  }
+  
+  setDeletingItem(true);
+  
+  try {
+    // Replace with your actual API call
+    // await deleteShopItem(item._id, groupId);
+    
+    // For now, simulate an API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Navigate back to the shop
+    navigate(`/groups/${groupId}/shop`);
+  } catch (err) {
+    console.error("Failed to delete item:", err);
+    alert("Failed to remove item from shop");
+  } finally {
+    setDeletingItem(false);
+  }
+};
+
+
 
   if (loading) {
     return (
@@ -246,7 +316,7 @@ const ShopItemDetailPage: React.FC = () => {
                     )}
 
                     <Box sx={{ mt: "auto" }}>
-                      <Box
+                      {!isAuthorized &&<Box
                         sx={{
                           display: "flex",
                           alignItems: "center",
@@ -315,7 +385,7 @@ const ShopItemDetailPage: React.FC = () => {
                         >
                           (Total: {selectedQuantity * item.price} coins)
                         </Typography>
-                      </Box>
+                      </Box> }
                       {error && (
                         <Typography
                           variant="body1"
@@ -332,31 +402,117 @@ const ShopItemDetailPage: React.FC = () => {
                           {error}
                         </Typography>
                       )}
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        fullWidth
-                        disabled={
-                          item.quantity === 0 ||
-                          item.availability.toLowerCase() === "out of stock" ||
-                          selectedQuantity > item.quantity
-                        }
-                        onClick={handlePurchase}
-                        startIcon={<ShoppingCartIcon />}
-                        sx={{
-                          py: 2,
-                          fontSize: "1.1rem",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {item.quantity === 0 ||
-                        item.availability.toLowerCase() === "out of stock"
-                          ? "Out of Stock"
-                          : `Purchase ${selectedQuantity} Item${
-                              selectedQuantity > 1 ? "s" : ""
-                            } - ${selectedQuantity * item.price} coins`}
-                      </Button>
+                    { !isAuthorized && <Button
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      fullWidth
+                      disabled={
+                        item.quantity === 0 ||
+                        item.availability.toLowerCase() === "out of stock" ||
+                        selectedQuantity > item.quantity
+                      }
+                      onClick={handlePurchase}
+                      startIcon={<ShoppingCartIcon />}
+                      sx={{
+                        py: 2,
+                        fontSize: "1.1rem",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {item.quantity === 0 ||
+                      item.availability.toLowerCase() === "out of stock"
+                        ? "Out of Stock"
+                        : `Purchase ${selectedQuantity} Item${
+                            selectedQuantity > 1 ? "s" : ""
+                          } - ${selectedQuantity * item.price} coins`}
+                    </Button>}       
+                    {isAuthorized && (
+  <Box sx={{ mt: 3, border: `1px solid ${theme.palette.divider}`, borderRadius: 2, p: 3 }}>
+    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: theme.palette.primary.main }}>
+      Admin Controls
+    </Typography>
+    
+    <Box sx={{ mb: 3 }}>
+      <Typography variant="body2" sx={{ mb: 1, color: theme.palette.text.secondary }}>
+        Update Item Inventory:
+      </Typography>
+      
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <TextField
+          label="Set Quantity"
+          type="number"
+          variant="outlined"
+          size="small"
+          value={adminQuantity !== null ? adminQuantity : item.quantity}
+          onChange={(e) => {
+            const value = parseInt(e.target.value);
+            if (!isNaN(value) && value >= 0) {
+              setAdminQuantity(value);
+            }
+          }}
+          inputProps={{ min: 0 }}
+          sx={{ width: 150 }}
+        />
+        
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={adminQuantity === null || adminQuantity === item.quantity || updatingQuantity}
+          onClick={handleUpdateQuantity}
+          startIcon={updatingQuantity ? <CircularProgress size={20} /> : null}
+        >
+          {updatingQuantity ? 'Updating...' : 'Update Quantity'}
+        </Button>
+        
+        {adminQuantity !== null && adminQuantity !== item.quantity && (
+          <Button
+            variant="text"
+            color="inherit"
+            onClick={() => setAdminQuantity(null)}
+            disabled={updatingQuantity}
+          >
+            Cancel
+          </Button>
+        )}
+      </Box>
+      
+      {quantityUpdateError && (
+        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+          {quantityUpdateError}
+        </Typography>
+      )}
+      
+      {quantityUpdateSuccess && (
+        <Typography color="success.main" variant="body2" sx={{ mt: 1 }}>
+          Quantity updated successfully!
+        </Typography>
+      )}
+    </Box>
+    
+    <Divider sx={{ my: 2 }} />
+    
+    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Button
+        variant="outlined"
+        color="secondary"
+        onClick={() => navigate(`/groups/${groupId}/shop/edit/${item._id}`)}
+      >
+        Edit Item Details
+      </Button>
+      
+      <Button
+        variant="outlined"
+        color="error"
+        onClick={handleDeleteItem}
+        disabled={deletingItem}
+        startIcon={deletingItem ? <CircularProgress size={20} /> : null}
+      >
+        {deletingItem ? 'Deleting...' : 'Remove Item'}
+      </Button>
+    </Box>
+  </Box>
+)}           
                     </Box>
                   </Box>
                 </Grid>
