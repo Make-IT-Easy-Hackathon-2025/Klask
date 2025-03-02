@@ -197,9 +197,9 @@ export const acceptNotification = async (notificationId: string, userId: string)
 }
 
 // Delete notification
-export const deleteNotification = async (notificationId: string) => {
+export const deleteNotification = async (notificationId: string, userId: string) => {
     try {
-        const response = await axios.delete(`${NOTIFICATION_ROUTE}/notifications/${notificationId}`);
+        const response = await axios.post(`${NOTIFICATION_ROUTE}/del`,  {notificationId, userId});
         return response.data;
     } catch (error: any) {
         console.error("Error deleting notification:", error);

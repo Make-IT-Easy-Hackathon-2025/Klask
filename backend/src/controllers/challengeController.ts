@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import Challenge from "../models/challengeModel";
 import User, { IUser } from "../models/userModel";
 import mongoose from "mongoose";
+import notificationModel from "../models/notificationModel";
+import Group from "../models/groupModel";
+import Notifications from "../models/notificationModel";
 
 export const getCreatedChallenges= async (req: Request, res: Response): Promise<void> => {
     const { userId, groupId } = req.params;
@@ -242,7 +245,7 @@ export const joinChallenge = async (req: Request, res: Response): Promise<void> 
         // Check if user is already in the challenge
 
         if (challenge.users.includes(userId)) {
-            res.status(400).json({
+            res.status(401).json({
                 success: false,
                 message: "User is already in the challenge"
             });
@@ -288,7 +291,6 @@ export const joinChallenge = async (req: Request, res: Response): Promise<void> 
 export const approveChallenge = async (req: Request, res: Response): Promise<void> => {
         const { challengeId, userId, groupId} = req.body;
         try {
-            console.log("hello",challengeId,userId,groupId);
             // Validate required fields
             if (!challengeId || !userId) {
                 res.status(400).json({
@@ -300,8 +302,6 @@ export const approveChallenge = async (req: Request, res: Response): Promise<voi
     
             // Find the challenge by ID
             const challenge = await Challenge.findById(challengeId);
-            console.log("hello",challenge);
-
             if (!challenge) {
                 res.status(404).json({
                     success: false,
@@ -340,6 +340,28 @@ export const approveChallenge = async (req: Request, res: Response): Promise<voi
             myChallenge.status = "completed";
             group.coins += challenge.coinsValue;
             group.totalCoins += challenge.coinsValue;
+
+            // create notification and set it's id to the user's notifications
+            // fetch group 
+            const groupObj =  await Group.findById(groupId
+            );
+            if (!groupObj) {
+                res.status(404).json({
+                    success: false,
+                    message: "Group not found"
+                });
+                return;
+            }
+
+            const notification = new Notifications({
+                message: `Your challenge ${challenge.title} has been approved. You have been awarded ${challenge.coinsValue} coins`,
+                isInvite: false
+            });
+            const savedNotification = await notification.save();
+
+            if(savedNotification){
+            user.notifications.push(savedNotification._id as mongoose.Schema.Types.ObjectId);
+            }
             await user.save();
 
             res.status(200).json({

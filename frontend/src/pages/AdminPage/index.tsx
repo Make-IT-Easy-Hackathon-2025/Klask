@@ -170,6 +170,12 @@ const GroupManagePage: React.FC = () => {
         return;
       }
       const response = await sendNotification(user._id, groupId);
+      console.log(response);
+      if(response.message === "User is already a member of this group"){
+        //already in group
+        setSnackbar({ open: true, message: "User already in group", severity: "error" });
+        return;
+      }
       setUserEmail("");
       setAddUserOpen(false);
       setSnackbar({
