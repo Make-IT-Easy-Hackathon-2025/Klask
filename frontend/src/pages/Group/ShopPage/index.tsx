@@ -7,17 +7,11 @@ import {
   Card,
   CardContent,
   Fab,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
   useTheme,
   Zoom,
   Grow,
+  Theme,
 } from "@mui/material";
-import { ShoppingCart as CartIcon } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../../components/Navbar";
 import { Add as AddIcon } from "@mui/icons-material";
@@ -27,8 +21,9 @@ import { useAuth } from "../../../context/AuthProvider";
 import {
   createShopItem,
   getAllShopItemsByGroupId,
-  updateShopItem,
 } from "../../../api";
+import { BoxTypeMap } from "@mui/system";
+import { OverridableComponent } from "@mui/types";
 
 
 const ShopPage: React.FC = () => {
@@ -134,7 +129,7 @@ const ShopPage: React.FC = () => {
 
   return (
     <NavBar isGroupPage={true} activeTab="shop">
-      <Box sx={{ p: 3, minHeight: "85vh", position: "relative" }}>
+      <Box sx={{ p: 3, minHeight: "85vh", position: "relative",  }}>
         <Typography
           variant="h4"
           component="h1"
@@ -296,3 +291,7 @@ const ShopPage: React.FC = () => {
 };
 
 export default ShopPage;
+function styled(Box: OverridableComponent<BoxTypeMap<{}, "div", Theme>>) {
+  throw new Error("Function not implemented.");
+}
+

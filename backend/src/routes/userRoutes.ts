@@ -1,6 +1,6 @@
 import express from "express";
 import { getCreatedGroups, getUserGroups } from "../controllers/groupController";
-import { createUser, getUserById, getUserIdByEmail, updateUser } from "../controllers/userController";
+import { createUser, getUserById, getUserIdByEmail, updateUser, updateUsersRole } from "../controllers/userController";
 
 const router = express.Router();
 
@@ -10,6 +10,7 @@ router.get("/:userId/createdGroups", getCreatedGroups);
 router.get("/email/:email",getUserIdByEmail);
 router.get("/:id",getUserById);
 router.put("/:id", updateUser); // Add the update route
+router.post("/update-role", updateUsersRole);
 
 
 export default router;
